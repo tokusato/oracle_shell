@@ -1,0 +1,6 @@
+SQL_HOME=/home/oracle/query
+SQL_STATUS_HOME=/home/oracle/query
+LIB=/home/oracle/LDLIB
+
+
+

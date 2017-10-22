@@ -1,6 +1,6 @@
 #!/bin/bash
 # 定義ファイル読み込み
-. /home/oracle/commonConfig.txt
+. /home/oracle/oracle_shell/commonConfig.txt
 
 ## リスナーの状態を表示する。
 echo '################  lsnrctl status  ################'

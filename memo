@@ -13,5 +13,9 @@ sqlplus -sでサイレントモード(実行時のsqlplusのバージョン情�
 set feedback off で何件の結果が得られたなどの結果豊国を抑止する。
 set echo on1とすれば、逆に実行時に打ったsqlが表示される。
 
+●/を押すと、直前に実行したSQL文が再実行される。
 
+●コメントは/* */の間に記述する。
 
+●データベースの状態を表示するためのSQL文(shutdownの時は何も表示されない。)
+select host_name, instance_name, status from v$instance;

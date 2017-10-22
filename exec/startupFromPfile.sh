@@ -1,5 +1,5 @@
 #!/bin/bash
 # 定義ファイル読み込み
-. /home/oracle/commonConfig.txt
+. /home/oracle/oracle_shell/commonConfig.txt
 
 startup pfile='/tmp/init.ora'
