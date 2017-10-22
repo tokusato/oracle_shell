@@ -1,21 +1,27 @@
-set lines 120
-set pages 100
+!date ;
+
+SET ECHO ON
+SET TIMING ON
+SET LINES 120
+SET PAGES 100
 SET COLSEP ","
-clear col
-col PROFILE format a15
-col RESOURCE_NAME format a30
-col RESOURCE_TYPE format a15
-col LIMIT format a15
-select
-  profile,
-  resource_name,
-  resource_type,
-  limit
-from
-  dba_profiles
-where
-  profile = 'DEFAULT'
-order by
-  resource_type, resource_name
+SET FEEDBACK OFF
+SET NULL "NULL"
+CLEAR COL
+COL PROFILE FORMAT A15
+COL RESOURCE_NAME FORMAT A30
+COL RESOURCE_TYPE FORMAT A15
+COL LIMIT FORMAT A15
+SELECT
+  PROFILE,
+  RESOURCE_NAME,
+  RESOURCE_TYPE,
+  LIMIT
+FROM
+  DBA_PROFILES
+WHERE
+  PROFILE = 'DEFAULT'
+ORDER BY
+  RESOURCE_TYPE, RESOURCE_NAME
 /
-exit
+EXIT
