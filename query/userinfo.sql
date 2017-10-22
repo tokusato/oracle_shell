@@ -18,5 +18,10 @@ select
   created
 from
   dba_users
+order by 
+  USER_ID asc
 /
+
+show con_name
+
 exit 
