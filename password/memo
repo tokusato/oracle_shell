@@ -1,0 +1,2 @@
+以下のコマンドを実行し、パスワードファイルを生成
+../../LDLIB/orapwd file=orapwORCL password=Oracle12c-0630 entries=10 format=12

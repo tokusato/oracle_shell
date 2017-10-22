@@ -19,3 +19,8 @@ set echo on1とすれば、逆に実行時に打ったsqlが表示される。
 
 ●データベースの状態を表示するためのSQL文(shutdownの時は何も表示されない。)
 select host_name, instance_name, status from v$instance;
+
+●テーブルのリネーム
+alter table ＜変更前テーブル名＞ rename to ＜変更後テーブル名＞；
+
+
