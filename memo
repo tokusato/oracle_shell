@@ -23,4 +23,8 @@ select host_name, instance_name, status from v$instance;
 ●テーブルのリネーム
 alter table ＜変更前テーブル名＞ rename to ＜変更後テーブル名＞；
 
+●テーブルの先頭5行を表示するSQL
+/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
+select rowid,rownum, name from test where rownum < 10;
+EOF
 
