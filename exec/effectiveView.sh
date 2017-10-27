@@ -33,5 +33,10 @@ echo 'v$sql  restrincting 1 row'
 select * from v\$sql where rownum = 1;
 eof
 
+echo '################'
+echo 'v$datafile  restrincting 1 row'
+/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << eof
+select * from v\$datafile where rownum = 1;
+eof
 
 

@@ -7,6 +7,7 @@
 ログインする度に毎回設定するようなコマンドがあれば、手間が省けてよい。
 SQL*Plus 接続時に実行されるコマンドファイルで、サイトプロファイル用の
 glogin.sql と、ユーザプロファイル用の login.sql の2種類ある。
+vim $ORACLE_HOME/sqlplus/admin/glogin.sql
 
 ●結果の表示方法
 sqlplus -sでサイレントモード(実行時のsqlplusのバージョン情報の出力なし)

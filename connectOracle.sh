@@ -33,6 +33,6 @@ case "$PATH" in
 esac
 
 
-${LDLIBPATH}/sqlplus sys/oracle@orcl12c as sysdba
+${LDLIBPATH}/sqlplus -s sys/oracle@orcl12c as sysdba
 #LDLIB/sqlplus sys/oracle as sysdba
 

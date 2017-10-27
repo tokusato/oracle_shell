@@ -1,0 +1,7 @@
+
+
+
+
+●テーブルがどの表領域に属しているか
+select table_name,tablespace_name from user_tables
+where rownum < 5 order by tablespace_name  ;

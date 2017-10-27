@@ -1,0 +1,5 @@
+
+
+●ファイル名一覧から拡張子.sqlを削除したものを表示するためのコマンド
+for i in `ls /home/oracle/oracle_shell/query/performance/*.sql`; do j
+=`basename $i` ; j=`echo $j | sed s/\.sql//`; j=`basename $j`;echo $j; done
