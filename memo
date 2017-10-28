@@ -29,3 +29,28 @@ alter table ＜変更前テーブル名＞ rename to ＜変更後テーブル名
 select rowid,rownum, name from test where rownum < 10;
 EOF
 
+●表領域は以下のディレクトリに格納されている。(
+IOちらつかせたいなら、自身が作成する表領域は別のデバイスに作成するのがよい??)
+/u01/app/oracle/oradata/orcl12c/orcl/
+
+●bigfile表領域のメリット
+ビッグ・ファイル表領域では、スモール・ファイル表領域のデータ・ファイルの最大サイズと比較して1000倍も大きなデータ・ファイルを作成することが可能。ビッグ・ファイル表領域に含まれるデータ・ファイルを1つに限定することで、従来のスモール・ファイル表領域で複数のデータ・ファイルを識別する為に使用していた10bitをブロック番号へ流用することが可能（22bit + 10bit = 32 bit）なため。
+
+●ORA-65096: 共通ユーザーまたはロール名が無効です
+そしてCDBとPDBには下記のルールがあります。
+・通常のローカル接続（11gR2までと同じように接続）した場合、CDBに接続される。
+・CDBにはユーザスキーマを作成することはできない。（ORA-65096となる）
+・NユーザスキーマはPDBに接続して作成する必要がある。
+・CDBからはユーザスキーマが見えない。
+
+●ユーザが作成した表がどの表領域に格納されているかを調べるためのSQL
+col TABLE_NAME format a20
+col TABLESPACE_NAME format a20
+select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
+
+●しばちょ02でtryユーザを作成済み
+現状create session 権限とcreate table権限を付与済み
+
+
+
+
