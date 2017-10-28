@@ -16,7 +16,7 @@ vim $ORACLE_HOME/sqlplus/admin/glogin.sql
 ●結果の表示方法
 sqlplus -sでサイレントモード(実行時のsqlplusのバージョン情報の出力なし)
 set feedback off で何件の結果が得られたなどの結果豊国を抑止する。
-set echo on1とすれば、逆に実行時に打ったsqlが表示される。
+set echo onとすれば、逆に実行時に打ったsqlが表示される。
 
 ●/を押すと、直前に実行したSQL文が再実行される。
 
@@ -57,4 +57,28 @@ select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
 
 ●テスト用テーブル作成SQL文
 
+●性能の解析に用いるv$sqlの情報
+## memo ⇒ v$sqlの
+#SQL_TEXT       SQLの先頭1000bytes
+#SORTS  SORTの回数
+#FETCHES        FETCHの回数
+#EXECUTIONS     実行回数
+#USERS_EXECUTING        現在実行中のユーザー数
+#PARSE_CALLS    解析コールの回数
+#DISK_READS     ディスク読み込み数
+#BUFFER_GETS    バッファ読み込み数
+#ROWS_PROCESSED SQLが戻す行数
+#CPU_TIME       処理に使用したCPU時間（マイクロ秒）
+#ELAPSED_TIME   処理に使用した経過時間（マイクロ秒）
+#ADDRESS        ほかのViewとの結合に使用
+#HASH_VALUE     ほかのViewとの結合に使用
+
+●性能の解析に用いるv$sql_plan
+OBJECT_NAME	実行計画中の表、索引名
+OPERATION	実行計画オペレーション
+OPTIONS	実行計画オペレーションのオプション
+OPTIMIZER	オプティマイザのモード
+DEPTH	実行計画のTreeの深さ
+ADDRESS	ほかのViewとの結合に使用
+HASH_VALUE	ほかのViewとの結合に使用
 
