@@ -8,7 +8,7 @@ LDLIBPATH=/home/oracle/LDLIB
 OPTION=$1
 
 if [ ! `whoami` = "oracle" ];then
-  echo "execute by root oracle"
+  echo "execute by oracle"
   exit 1
 fi
 
@@ -20,8 +20,7 @@ ${LDLIBPATH}/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
   shutdown immediate; 
 EOF
 
-echo sleep
-sleep 10
+sleep 1
 
 #${LDLIBPATH}/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
 #shutdown immediate;
@@ -31,10 +30,12 @@ echo "###################"
 echo "NOW SHUTDOWN VIRTUALBOX"
 echo "###################"
 
-if [ ${OPTION}='r' ];then
+if [ -z ${OPTION} ];then
+  shutdown -h now
+elif [ ${OPTION}="r" ];then
   shutdown -r now
-else
-  shutdown -h now 
+else 
+  echo designated argument is not supported
 fi
 
 
