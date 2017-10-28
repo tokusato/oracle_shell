@@ -9,6 +9,10 @@ SQL*Plus 接続時に実行されるコマンドファイルで、サイトプ�
 glogin.sql と、ユーザプロファイル用の login.sql の2種類ある。
 vim $ORACLE_HOME/sqlplus/admin/glogin.sql
 
+●SQL文の実行の前にexplain forをつけるとアクセスパスの解析結果を表示する。
+このとき、SQL文自体は実行されない。
+
+
 ●結果の表示方法
 sqlplus -sでサイレントモード(実行時のsqlplusのバージョン情報の出力なし)
 set feedback off で何件の結果が得られたなどの結果豊国を抑止する。
@@ -51,6 +55,6 @@ select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
 ●しばちょ02でtryユーザを作成済み
 現状create session 権限とcreate table権限を付与済み
 
-
+●テスト用テーブル作成SQL文
 
 

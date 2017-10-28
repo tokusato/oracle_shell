@@ -9,7 +9,8 @@ if [ -z $1 ];then
 fi
 
 
-/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
+#/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
+/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
 
 set linesize 30
 col Name format a20
