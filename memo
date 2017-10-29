@@ -99,7 +99,10 @@ set linesize 50000
 アクセスパスのシェルに渡したいなら以下のように記述
 ./accessPath.sh 'select name from test where name = '\''aaa'\'';'
 
-
+●bashrcに加えた変更。これでgithubのユーザ認証を簡単にできる。
+##ADDED
+#PS1='\[\e[36m\][\u@tokusato \[\e[33m\]\t\[\e[31m]' ⇒ 数字は色を表現
+PS1='\[[\u@tokusato \[\e \t \W\]]'
 
 
 

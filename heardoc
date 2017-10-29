@@ -1,4 +1,5 @@
-/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
+#/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
+/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
 
 exit
 

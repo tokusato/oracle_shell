@@ -1,2 +1,3 @@
-/home/oracle/LDLIB/sqlplus sys/oracle@orcl12c as sysdba @
+#/home/oracle/LDLIB/sqlplus sys/oracle@orcl12c as sysdba @
+/home/oracle/LDLIB/sqlplus sys/oracle as sysdba @
 
