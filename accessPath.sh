@@ -1,7 +1,7 @@
 ##################################
 ## テーブル検索のアクセスパスを出力するシェル
 ## 第一引数にシングルクォートで囲んだSQL文
-## e.g. ./accessPath.sh 'select id from test;'
+## e.g. ./accessPath.sh 'select name from test where id = 4;'
 ##################################
 
 #if [ -z $1 ];then 
@@ -11,7 +11,7 @@
 
 
 #/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
-/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
+/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
 
 explain plan for $1
 select * from table(dbms_xplan.display);

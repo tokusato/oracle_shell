@@ -19,7 +19,7 @@
 #select * from table(dbms_xplan.DISPLAY_SQL_PLAN_BASELINE);
 
 #/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
-/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
+/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
 
 explain plan for $1
 select * from table(dbms_xplan.display);

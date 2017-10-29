@@ -82,3 +82,25 @@ DEPTH	実行計画のTreeの深さ
 ADDRESS	ほかのViewとの結合に使用
 HASH_VALUE	ほかのViewとの結合に使用
 
+●出力を簡素にするオプション
+
+set echo off
+set feedback off
+set heading off
+set trimspool on
+set timing off
+set time off
+set pages 0
+set long 2000000000
+set linesize 50000
+
+●シェルでシングルクォートをエスケープする方法
+'  ⇒  '\''
+アクセスパスのシェルに渡したいなら以下のように記述
+./accessPath.sh 'select name from test where name = '\''aaa'\'';'
+
+
+
+
+
+

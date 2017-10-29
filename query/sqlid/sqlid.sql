@@ -1,0 +1,9 @@
+set timing on
+
+col sql_text format a50
+
+SELECT sql_text, sql_id FROM v$sql where sql_text LIKE '%Taro%';
+
+EXIT  
+
+
