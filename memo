@@ -104,6 +104,64 @@ set linesize 50000
 #PS1='\[\e[36m\][\u@tokusato \[\e[33m\]\t\[\e[31m]' ⇒ 数字は色を表現
 PS1='\[[\u@tokusato \[\e \t \W\]]'
 
+●AUTOTRACE機能の有効化
+http://www.atmarkit.co.jp/ait/articles/0410/21/news098_4.html
+ロールの作成
+@$ORACLE_HOME/sqlplus/admin/plustrce.sql
+ロールの付与
+grant plustrace to sys;
+オートトレース用のテーブルを作成する。
+@$ORACLE_HOME/rdbms/admin/utlxplan.sql
+SET AUTOTRACE TRACEONLY
+
+※sysユーザだと検索に失敗する。
+select * from test;
+SP2-0612: Error generating AUTOTRACE report
+
+tryユーザだとうまく統計情報が出力された。
+出力は以下のように
+#############################################################################
+SET AUTOTRACE TRACEONLY
+select * from test;
+
+Elapsed: 00:00:00.03
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 1357081020
+
+--------------------------------------------------------------------------
+| Id  | Operation         | Name | Rows  | Bytes | Cost (%CPU)| Time     |
+--------------------------------------------------------------------------
+|   0 | SELECT STATEMENT  |      |     2 |    90 |     3   (0)| 00:00:01 |
+|   1 |  TABLE ACCESS FULL| TEST |     2 |    90 |     3   (0)| 00:00:01 |
+--------------------------------------------------------------------------
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+         18  recursive calls
+         13  db block gets
+         27  consistent gets
+          0  physical reads
+       2028  redo size
+        674  bytes sent via SQL*Net to client
+        607  bytes received via SQL*Net from client
+          2  SQL*Net roundtrips to/from client
+          0  sorts (memory)
+          0  sorts (disk)
+          2  rows processed
+#############################################################################
+
+
+
+
+
+
 
 
 
