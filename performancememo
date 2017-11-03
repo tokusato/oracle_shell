@@ -1,0 +1,67 @@
+●インデクスの貼られた列に関数を利用すると、インデクスが有効でなくなる。
+OK: WHERE  TO_CHAR(indexcolumn, 'YYYYMMDD') = '19890330'
+NG: WHERE  indexcolumn = TO_DATE('19890330' , 'YYYYMMDD')
+
+●暗黙の型変換
+暗黙の型変換も性能劣化するため、DDLで定義した列のデータ型を指定したSQL文を作成する。
+
+●in句
+IN 述語の引数リストには、最もありそうなキーを左寄せする
+遅い(かもしれない)
+SELECT * FROM Address WHERE prefecture IN ('鳥', '徳', '東', '大');
+速い(かもしれない)
+SELECT * FROM Address WHERE prefecture IN ('東', '大', '鳥', '徳'); 
+
+●ヒント句
+どうしてもオプティマイザが言う事を聞いてくれない！！という時はヒント句を使うと解決する事が多いです。ヒント句を指定する事により実行計画をある程度操作する事ができます。
+・特に有用なヒント句
+実行計画が大幅に狂う時は結合順、結合方法が間違っているときが多いのでそれを下記ヒント句でただすことができます。
+LEADINGヒント
+SELECT /* LEADING(e j) */ * FROM employees e, departments d, job_history j WHERE e.department_id = d.department_id AND e.hire_date = j.start_date; 
+
+●不可視インデックス
+オプティマイザから見えないようにする事が出来る。
+ある特定のSQLだけはこのindexを使いたいが他のSQLには影響を与えないようにという時に使える。
+
+●union より union all
+重複行を排除するためのソートが発生するので、重複を許すならunion all
+
+SQL> select count(id) from test where id > 150;
+
+Elapsed: 00:00:00.06
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 1950795681
+
+---------------------------------------------------------------------------
+| Id  | Operation          | Name | Rows  | Bytes | Cost (%CPU)| Time     |
+---------------------------------------------------------------------------
+|   0 | SELECT STATEMENT   |      |     1 |    13 |     3   (0)| 00:00:01 |
+|   1 |  SORT AGGREGATE    |      |     1 |    13 |            |          |
+|*  2 |   TABLE ACCESS FULL| TEST |    50 |   650 |     3   (0)| 00:00:01 |
+---------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - filter("ID">150)
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+         52  recursive calls
+          7  db block gets
+         64  consistent gets
+          2  physical reads
+       1008  redo size
+        543  bytes sent via SQL*Net to client
+        607  bytes received via SQL*Net from client
+          2  SQL*Net roundtrips to/from client
+          2  sorts (memory)
+          0  sorts (disk)
+          1  rows processed

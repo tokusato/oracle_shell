@@ -160,6 +160,26 @@ Statistics
 
 
 
+●tryユーザでログインするためには、以下のように明示的にORCL(PDB)に接続する必要あり。
+conn try/try@orcl
+ログインした状態で@ddl/insert_test.sqlのように相対パスでSQL文のファイルを渡せば、実行してくれる。
+
+
+●AUTOTRACE
+・SET AUTOTRACE ON
+SQLの実行結果と、実行計画と統計情報を両方出力する。
+・SET AUTOTRACE OFF
+実行計画や統計情報の出力を停止する。
+・SET AUTOTRACE ON EXPLAIN
+SQLの実行結果と、実行計画のみ出力する
+・SET AUTOTRACE ON STATISTICS
+SQLの実行結果と、統計情報のみ出力する
+・SET AUTOTRACE TRACEONLY
+SQLの実行結果を出力せずに、実行計画と統計情報のみ出力する。
+・SET AUTOTRACE TRACEONLY　EXPLAIN
+SQLの実行結果を出力せずに、実行計画のみ出力する。
+・SET AUTOTRACE TRACEONLY　STATISTICS
+SQLの実行結果を出力せずに、統計情報のみ出力する。
 
 
 
