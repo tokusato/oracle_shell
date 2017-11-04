@@ -52,8 +52,58 @@ col TABLE_NAME format a20
 col TABLESPACE_NAME format a20
 select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
 
-●しばちょ02でtryユーザを作成済み
+●しば02でtryユーザを作成済み
 現状create session 権限とcreate table権限を付与済み
+
+●表の行数を簡単に表示するSQL
+col table_name format a30
+col num_rows format 99999999999
+select table_name, num_rows from user_tables order by table_name;
+
+⇒ただし、表の統計情報の取得をONにしている必要あり。
+取得ONの方法は以下
+(ただし、プロシージャを起動するには、表の所有者であるか、ANALYZE ANY権限が必要です。SYSが所有しているオブジェクトの場合、表の所有者であるか、ANALYZE ANY DICTIONARY権限またはSYSDBA権限が必要)
+BEGIN
+	DBMS_STATS.GATHER_TABLE_STATS(
+		OWNNAME       => 'TRY'
+		,TABNAME      => 'INS_TEST'
+		,METHOD_OPT   => 'FOR ALL INDEXED'
+		,CASCADE      => FALSE
+	);
+END;
+/
+
+実行して、統計情報が取得できたかどうかは以下のSQL文で確認可能
+ALTER SESSION SET NLS_DATE_FORMAT='yyyy-mm-dd hh24:mi:ss';
+col NAME format a30
+SELECT TABLE_NAME NAME, LAST_ANALYZED
+  FROM USER_TABLES
+WHERE TABLE_NAME = 'INS_TEST';
+
+
+
+
+###################################################
+●ループ(insertの書き方)
+set timing on
+
+DROP TABLE INS_TEST;
+
+CREATE TABLE INS_TEST (
+	id NUMBER,
+	letter VARCHAR(100)
+);
+
+begin
+FOR i IN 1..1000000 LOOP
+     INSERT INTO INS_TEST VALUES(i, RPAD(TO_CHAR(i),100,'Z'));
+   END LOOP;
+   COMMIT;
+END;
+/
+
+
+
 
 ●テスト用テーブル作成SQL文
 
