@@ -1,0 +1,13 @@
+/*DECLARE comp VARCHAR2(30):='';
+version VARCHAR2(30):=''; */
+VARIABLE version VARCHAR2(30);
+VARIABLE comp VARCHAR2(30);
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('checking db version');
+  EXECUTE DBMS_UTILITY.DB_VERSION(:version,:comp);
+  DBMS_OUTPUT.PUT_LINE('version = ' || version);
+  DBMS_OUTPUT.PUT_LINE('comp = ' || comp);
+END;
+/
+
+EXIT; 
