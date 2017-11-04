@@ -1,6 +1,6 @@
 ●インデクスの貼られた列に関数を利用すると、インデクスが有効でなくなる。
-OK: WHERE  TO_CHAR(indexcolumn, 'YYYYMMDD') = '19890330'
-NG: WHERE  indexcolumn = TO_DATE('19890330' , 'YYYYMMDD')
+NG: WHERE  TO_CHAR(indexcolumn, 'YYYYMMDD') = '19890330'
+OK: WHERE  indexcolumn = TO_DATE('19890330' , 'YYYYMMDD')
 
 ●暗黙の型変換
 暗黙の型変換も性能劣化するため、DDLで定義した列のデータ型を指定したSQL文を作成する。
@@ -22,6 +22,25 @@ SELECT /* LEADING(e j) */ * FROM employees e, departments d, job_history j WHERE
 ●不可視インデックス
 オプティマイザから見えないようにする事が出来る。
 ある特定のSQLだけはこのindexを使いたいが他のSQLには影響を与えないようにという時に使える。
+
+●ヒストグラム
+表のデータ偏りを確認し、テーブルスキャンとインデクススキャンのいずれが良い検索方法かチェックする。
+selectivity : 条件を適用したときの選択され具合
+cardinality : 全行数/selectivity
+
+⇒カーディナリティが高いほうがインデクススキャンが適した検索方法になる。
+
+●バインド変数利用時のセェクティビティ
+・バインドピーク機能の有無で変わる。(バインド変数内の値を先読みする。)
+
+　バインドピーク機能有の場合
+　SQLの解析(ハードパース)字にセットされた値で算出
+　
+　バインドピーク機能無の場合
+    条件が等価条件の場合
+　　　個別値数(NDV)の値で全行数を割る。⇒つまり均等にデータが入っているとみなされる。
+　　条件が非等価条件の場合
+      0.05の固定値がセレクティビティに指定される。
 
 ●union より union all
 重複行を排除するためのソートが発生するので、重複を許すならunion all
@@ -65,3 +84,6 @@ Statistics
           2  sorts (memory)
           0  sorts (disk)
           1  rows processed
+
+
+

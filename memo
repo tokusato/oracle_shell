@@ -181,6 +181,48 @@ SQLの実行結果を出力せずに、実行計画のみ出力する。
 ・SET AUTOTRACE TRACEONLY　STATISTICS
 SQLの実行結果を出力せずに、統計情報のみ出力する。
 
+●マッチしたパターンをそのまま利用(sed)
+21,3020s/,\([0-9]\)/',\1/
+⇒任意の数字にマッチしたら、\1と記載した箇所にその数字をそのまま利用
+
+●結合表の性能を測るシェル
+/home/oracle/LDLIB/sqlplus try/try@orcl @query/emp_dept_merge.sql
+/home/oracle/LDLIB/sqlplus try/try@orcl @ddl/emp_dept.sql
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 103653158
+
+------------------------------------------------------------------------------------------------------
+| Id  | Operation                     | Name         | Rows  | Bytes |TempSpc| Cost (%CPU)| Time     |
+------------------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |              |  3000 |   190K|       |    57   (2)| 00:00:01 |
+|   1 |  SORT ORDER BY                |              |  3000 |   190K|   240K|    57   (2)| 00:00:01 |
+|   2 |   NESTED LOOPS                |              |  3000 |   190K|       |     7   (0)| 00:00:01 |
+|   3 |    TABLE ACCESS BY INDEX ROWID| DEPARTMENT   |     1 |    35 |       |     2   (0)| 00:00:01 |
+|*  4 |     INDEX UNIQUE SCAN         | SYS_C0011832 |     1 |       |       |     1   (0)| 00:00:01 |
+|   5 |    TABLE ACCESS FULL          | EMPLOYEE     |  3000 | 90000 |       |     5   (0)| 00:00:01 |
+------------------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - access("D"."DEPTNO"=3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
