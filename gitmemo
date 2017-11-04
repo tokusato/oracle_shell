@@ -1,1 +1,20 @@
 tokusato
+
+●gitのログを一行で表示
+git log --oneline
+
+●gitのログをグラフで表示
+git log --graph
+
+●特定コミットの修正差分表示
+git diff 4cfb7fe
+
+●ブランチの調査
+git branch      ⇒git のコミットはgit用ブランチで作成していく。
+
+●ブランチの作成
+git branch gitstudy
+
+●ブランチの切り替え
+git checkout gitstudy
+
