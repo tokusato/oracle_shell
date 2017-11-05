@@ -1,4 +1,13 @@
+●監視対象のSQLにするためには、ヒント句に/*+ MONITOR */を入れればOK
+select /*+ MONITOR */ /* practiceSQL2 */ COL1 || ' : ' || COL2 "Record" from TBL2 where ROWNUM <=3 ;
 
+⇒監視対象のSQLを図で見たいなら、EMExpressにログインして、
+　パフォーマンスタブ、監視対象SQLタブと進み、見たいSQLが実行された時間をグラフから指定する。
+　すると、監視対象のSQLが出力される。
+
+  【注意】
+　SQLとPLSQLとでは、出力のされ方が違うため、注意する。
+  PLSQLでは、実行計画の情報が出力されない。
 ●キャッシュをクリアする方法
   /*共有プールのクリア*/
     ALTER SYSTEM FLUSH SHARED_POOL;
