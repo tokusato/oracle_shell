@@ -1,0 +1,3 @@
+●監視対象のSQLにするためには、ヒント句に/*+ MONITOR */を入れればOK
+select /*+ MONITOR */ /* practiceSQL2 */ COL1 || ' : ' || COL2 "Record" from TBL2 where ROWNUM <=3 ;
+
