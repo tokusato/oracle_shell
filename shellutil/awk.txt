@@ -1,0 +1,36 @@
+#AWK############################################################################################################
+llでファイル一覧を表示し、その中で、maint01の文字列が含まれない行を全体表示($0)
+ll | awk '!/maint01/{print $0}'
+#コメント行を削除して表示
+awk '! /^#/'  filename 
+#偶数行(行番号が2で割り切れる)のみ表示する
+awk 'NR%2==0' filename
+#奇数行を表示する。2で割った余りが 1のとき表示します．NR%2==1としたほうがわかりやすくなりますが，AWKでは 1は真ですので，省略しても OKです．
+awk 'NR%2' filename 
+#空行を削除awk '/./' filename  
+#行番号をつけてファイル出力(現在の入力に対する通し番号（NR）とスペース（OFS）と行全体（$0）>を代入し，再構築しています．)
+awk '$0 = NR OFS $0' filename
+#2文字目以降の文字列を取り出す。
+echo 'abcde' | awk '{print substr($0, 2)}'result : bcde
+#2文字目以降の3文字を取り出す。
+echo 'abcde' | awk '{print substr($0, 2, 3)}'result : bcd 
+#1文字目以降"f"という文字が出てくるまでを取り出す。
+echo 'abcdefg' | awk  '{print substr($0,1,index($0,"f"))}'   | sort -u 
+#1文字目以降,最終文字の一つ手前までを取り出す。
+echo 'abcdefg' | awk  '{print substr($0,1,length($0)-1)}'   | sort -u 
+#最後の3文字を取り出す。echo 'abcdefg' | awk  '{print substr($0,length($0)-3,length($0))}'   | sort -u #算術条件(複数)awk '$1 > 1000  &&  $2 < 2000' filename 
+#デリミタとしてカンマまたはスペースを使用する。
+awk -F [ ,] '{print $0}' 
+#pdlsでサーバのプロセス表示した後、7列目のプログラムIDがのものだけを出力する。
+pdls -d prc | grep fes | awk '$7 == "Ao1"{ print $0}'"awk_sample.txt" 170L, 5251C                                              37,1        先頭
+
+#大文字小文字変換
+echo hello | tr [a-z] [A-Z] #
+1から10までのループ
+for i in `seq 1 10`; do        echo "No: $i"done 
+# 1から10までのループ(0埋め)for i in `seq -w 1 10`; do        echo "No: $i"done 
+#変数が未定義か空文字の場合、wordを返す ($barにも保存する)${var:=word} 
+#ヒアドキュメント1cat << EOShogefugapiyoEOS #ヒアドキュメント2sqlplus -S user/pass@sid << EOSset pagesize 0set feedback offselect table_name from tabsorder by table_name;EOS 
+#カウンタ
+COUNT=1cat ${TARGET_SERVER_FILE} | while read SERVERdo        STRCOUNT=`echo ${COUNT} | awk '{printf "%02d", $0}'`        echo "TARGET SERVER${STRCOUNT} : ${SERVER}     TARGET PATH : ${TARGET_FILE_PATH}"        COUNT=$(( COUNT &#43; 1 ))done  
+#ファイルのエラー出力を抑止command    2>/dev/null
