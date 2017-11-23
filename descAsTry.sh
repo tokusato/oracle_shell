@@ -10,7 +10,8 @@ fi
 
 
 #/home/oracle/LDLIB/sqlplus -s sys/oracle@orcl12c as sysdba  << EOF
-/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
+#/home/oracle/LDLIB/sqlplus -s sys/oracle as sysdba  << EOF
+/home/oracle/LDLIB/sqlplus -s try/try << EOF
 
 set linesize 60
 col Name format a20

@@ -17,7 +17,9 @@ fi
 #and 
 #  user_tables.TABLE_NAME = user_ind_columns.TABLE_NAME  ;
 #/home/oracle/LDLIB/sqlplus sys/oracle as sysdba  << EOF
-/home/oracle/LDLIB/sqlplus sys/oracle@orcl12c as sysdba  << EOF
+##/home/oracle/LDLIB/sqlplus sys/oracle@orcl12c as sysdba  << EOF
+#/home/oracle/LDLIB/sqlplus try/try@orcl << EOF
+/home/oracle/LDLIB/sqlplus sys/oracle@orcl as sysdba  << EOF
 
 col TABLE_NAME format a15
 col TABLESPACE_NAME format a20

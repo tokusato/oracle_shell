@@ -1,0 +1,6 @@
+
+●デフォルトのデータファイルパス
+/u01/app/oracle/oradata/orcl12c/
+
+
+
