@@ -1,0 +1,2 @@
+●きれいな書式でテーブルの内容を出力(print_tableプロシージャの定義が必要)
+ exec print_table('select * from USER_TAB_STATISTICS where TABLE_NAME = ''TBL2''');

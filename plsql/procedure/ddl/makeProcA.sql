@@ -1,0 +1,10 @@
+CREATE OR REPLACE PROCEDURE proc_a(
+	i1 IN NUMBER,
+	i2 IN NUMBER,
+	o1 OUT NUMBER) IS 
+BEGIN 
+	o1 = i1 + i2 ;
+	RETURN ;
+END;
+/
+exit ;
