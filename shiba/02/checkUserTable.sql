@@ -1,7 +1,0 @@
-
-col TABLE_NAME format a20
-col TABLESPACE_NAME format a20
-
-select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
-
-
