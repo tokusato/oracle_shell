@@ -27,3 +27,7 @@ git push origin gitstudy
 ●git pullのブランチ指定
 git pull origin gitstudy
 
+●直前のコミットを削除する。HEAD^は直前のコミットのことを示す。
+  hardオプションは、実際のファイルの変更も戻したいときに利用するオプション
+git reset --hard HEAD^
+

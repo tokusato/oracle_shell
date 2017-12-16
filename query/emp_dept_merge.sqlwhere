@@ -10,11 +10,11 @@ SELECT /* GET ENAME FROM DNAME */
   d.deptname
 FROM
   /*employee e join department d*/
-  department d JOIN employee e
-ON
+  department d, employee e
+WHERE 
   d.deptno = e.deptno
 AND 
-  d.deptno >= 3 
+  d.deptno = 3
 ORDER BY 
   empno
 /
