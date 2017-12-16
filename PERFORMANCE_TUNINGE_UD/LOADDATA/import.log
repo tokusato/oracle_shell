@@ -1,0 +1,50 @@
+;;; 
+Import: Release 12.2.0.1.0 - Production on Sat Dec 16 17:22:54 2017
+
+Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
+;;; 
+Connected to: Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+Master table "TRY"."SYS_IMPORT_FULL_01" successfully loaded/unloaded
+import done in AL32UTF8 character set and AL16UTF16 NCHAR character set
+export done in WE8MSWIN1252 character set and AL16UTF16 NCHAR character set
+Warning: possible data loss in character set conversions
+Starting "TRY"."SYS_IMPORT_FULL_01":  try/********@orcl remap_schema=student:try directory=import_dir dumpfile=STUDENT_DATA.DMP logfile=import.log 
+Processing object type SCHEMA_EXPORT/PRE_SCHEMA/PROCACT_SCHEMA
+Processing object type SCHEMA_EXPORT/SEQUENCE/SEQUENCE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE
+Processing object type SCHEMA_EXPORT/TABLE/TABLE_DATA
+. . imported "TRY"."APPLICATIONS"                        12.13 MB   90250 rows
+. . imported "TRY"."APPLICATIONS_ONE_INDEX"              5.342 MB   50000 rows
+. . imported "TRY"."APPLICATIONS_OVER_INDEXED"           5.342 MB   50000 rows
+. . imported "TRY"."STUDENTS"                            1.226 MB   10135 rows
+. . imported "TRY"."COURSE_ENROLLMENTS"                  5.100 MB  243167 rows
+. . imported "TRY"."COURSE_OFFERINGS"                    185.3 KB    6257 rows
+. . imported "TRY"."COURSE_ENROLLMENTS_SMALL"            103.9 KB    4544 rows
+. . imported "TRY"."COURSES"                             43.65 KB     144 rows
+. . imported "TRY"."APPLICANTS_IMPORT"                   36.74 KB     250 rows
+. . imported "TRY"."CLASS_STANDINGS"                     6.546 KB       6 rows
+. . imported "TRY"."DEGREES"                             7.617 KB      15 rows
+. . imported "TRY"."DEGREE_LEVELS"                       5.523 KB       2 rows
+. . imported "TRY"."DEGREE_REQUIREMENTS"                 15.24 KB     280 rows
+. . imported "TRY"."DEGREE_TYPES"                        5.992 KB       3 rows
+. . imported "TRY"."DEPARTMENTS"                         5.703 KB      10 rows
+. . imported "TRY"."GRADES"                              6.046 KB       6 rows
+. . imported "TRY"."PERF_STATS"                          6.703 KB       9 rows
+. . imported "TRY"."SESSIONS"                            5.507 KB       3 rows
+. . imported "TRY"."STUDENTS_SMALL"                      35.93 KB     200 rows
+. . imported "TRY"."STUDENT_CLASS_TERMS"                  8.25 KB      56 rows
+. . imported "TRY"."TERMS"                               6.312 KB      22 rows
+. . imported "TRY"."PERFORMANCE_CAPTURE_STATS"               0 KB       0 rows
+Processing object type SCHEMA_EXPORT/TABLE/IDENTITY_COLUMN
+Processing object type SCHEMA_EXPORT/FUNCTION/FUNCTION
+Processing object type SCHEMA_EXPORT/FUNCTION/ALTER_FUNCTION
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/FUNCTIONAL_INDEX/INDEX
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/TABLE/INDEX/STATISTICS/FUNCTIONAL_INDEX/INDEX_STATISTICS
+Processing object type SCHEMA_EXPORT/VIEW/VIEW
+Processing object type SCHEMA_EXPORT/TABLE/CONSTRAINT/REF_CONSTRAINT
+Processing object type SCHEMA_EXPORT/TABLE/STATISTICS/TABLE_STATISTICS
+Processing object type SCHEMA_EXPORT/STATISTICS/MARKER
+Job "TRY"."SYS_IMPORT_FULL_01" successfully completed at Sat Dec 16 17:24:00 2017 elapsed 0 00:01:03
