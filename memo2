@@ -1,2 +1,13 @@
 ●きれいな書式でテーブルの内容を出力(print_tableプロシージャの定義が必要)
  exec print_table('select * from USER_TAB_STATISTICS where TABLE_NAME = ''TBL2''');
+
+●その表領域のUNDO保存保証が有効かを確認するためのSQL。
+　⇒無効にするためには、NO GUARANTEEを指定してやればよい。
+
+
+●RESTAPIを利用したoracleの管理
+⇒RESTAPIに対応するのは、ブラウザからの管理を実現するため？？
+DBCS サービスの起動
+＜for Linux＞
+
+curl -i -X POST -u "user_name:password" -H "X-ID-TENANT-NAME:identity_domain" -H "Content-Type:application/json" -d '{"lifecycleState": "start"}' endpoint/paas/service/dbcs/api/v1.1/instances/identity_domain/service_name
