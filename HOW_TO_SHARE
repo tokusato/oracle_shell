@@ -1,0 +1,11 @@
+
+virtualboxの設定で共有ディレクトリを指定して起動。
+特にマウントすることなく、データが共有できた。
+マウントしないと、データの書き込みができない??
+
+mountコマンドを実行すると以下の出力結果。
+ShareBoth on /media/sf_ShareBoth type vboxsf (rw,nodev,relatime)
+
+
+
+
