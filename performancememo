@@ -87,3 +87,6 @@ Statistics
 
 
 
+
+物理読み込みブロック数 = physical reads
+それは読み込み元（ディスク or バッファ・キャッシュ）を問わず読み込んだ全ブロック数（論理読み込みブロック数 = consistent gets）

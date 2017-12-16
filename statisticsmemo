@@ -1,0 +1,10 @@
+
+●各テーブルの統計情報のサンプリング(ハッシュベースサンプリングで全部の行の統計とらんくてもOK)
+select DBMS_STATS.GET_PREFS(pname => 'ESTIMATE_PERCENT', ownname => 'TRY', tabname => 'TBL1') from DUAL;
+
+●統計情報が最後に取得された時間を獲得
+select TABLE_NAME, NUM_ROWS, BLOCKS, AVG_ROW_LEN, 
+to_char(LAST_ANALYZED, 'YYYY/MM/DD HH24:MI:SS') from USER_TABLES ;
+
+●ユーザの更新履歴を確認
+select TABLE_NAME, INSERTS, UPDATES, DELETES, TRUNCATED from USER_TAB_MODIFICATIONS ;

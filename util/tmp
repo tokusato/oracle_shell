@@ -1,0 +1,4 @@
+grant select on V_$SESSION to try;
+grant select on V_$SQL_PLAN to try;
+grant select on V_$SQL_PLAN_STATISTICS_ALL to try;
+grant select on V_$SQL to try;
