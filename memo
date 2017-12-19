@@ -322,6 +322,3 @@ select TABLE_NAME, DBMS_STATS.GET_PREFS(pname => 'STALE_PERCENT', ownname => 'TR
 
 
 
-
-
-
