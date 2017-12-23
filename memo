@@ -304,6 +304,9 @@ Predicate Information (identified by operation id):
 
    4 - access("D"."DEPTNO"=3)
 
+●何%のデータが変化したら、統計情報を失効させるかを確認するSQL
+col STALE_PERCENT format a10 ;
+select TABLE_NAME, DBMS_STATS.GET_PREFS(pname => 'STALE_PERCENT', ownname => 'TRY', tabname => TABLE_NAME) "STALE_PERCENT" from USER_TABLES;
 
 
 
