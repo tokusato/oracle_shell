@@ -1,0 +1,10 @@
+
+/*
+ *
+ */
+COL table_name FORMAT a20
+COL tablespace_name FORMAT a20
+
+SELECT TABLE_NAME, TABLESPACE_NAME FROM USER_TABLES;
+
+

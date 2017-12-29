@@ -1,11 +1,14 @@
+set autotrace off
 
-DROP TABLE DEPARTMENT ;
 DROP TABLE EMPLOYEE ;
+DROP TABLE DEPARTMENT ;
+DROP INDEX IDX_EMP ;
+/*DROP INDEX PK_D ;*/
 
 CREATE TABLE DEPARTMENT /* 部門の情報を格納する表 */(
 	deptno NUMBER,
 	deptname VARCHAR(40),
-	PRIMARY KEY (deptno)
+	CONSTRAINT PK_DEP PRIMARY KEY (deptno)
 );
 
 CREATE TABLE EMPLOYEE (
@@ -15,6 +18,15 @@ CREATE TABLE EMPLOYEE (
 	FOREIGN KEY (deptno)
               REFERENCES DEPARTMENT(deptno)
 );
+
+/* 主キーが既に設定されているため、主キー列にインデクスを追加ではれない。 */
+/*CREATE INDEX idx_dep ON DEPARTMENT(deptno);*/
+
+CREATE INDEX IDX_EMP ON EMPLOYEE(deptno);
+
+
+set termout OFF
+
 
 /*
 CREATE TABLE EMPLOYEE (

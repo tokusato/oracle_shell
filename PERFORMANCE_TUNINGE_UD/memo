@@ -1,0 +1,64 @@
+●データ格納先
+LOADDATA/**.DMP
+
+●ディレクトリオブジェクトの生成
+create or replace directory import_dir as '/home/oracle/PERFORMANCE_TUNINGE_UDEMY/LOADDATA';
+
+●tryユーザに対してディレクトリオブジェクトに対する読み書きの権限を付与する。
+grant read, write on directory import_dir to try;
+
+●テーブルのインポート:
+impdp try/try@orcl remap_schema=student:try directory=import_dir dumpfile=STUDENT_DATA.DMP logfile=import.log
+
+
+●エラーが出たため、権限付与してみた.
+grant DATAPUMP_IMP_FULL_DATABASE to try;
+
+grant create any table to try;
+grant create any index to try;
+
+●ミスったらやり直す。
+DECLARE
+BEGIN
+drop table "TRY"."GRADES" CASCADE CONSTRAINTS;
+drop table "TRY"."SESSIONS" CASCADE CONSTRAINTS;
+drop table "TRY"."DEGREE_LEVELS" CASCADE CONSTRAINTS;
+drop table "TRY"."DEGREE_TYPES" CASCADE CONSTRAINTS;
+drop table "TRY"."DEPARTMENTS" CASCADE CONSTRAINTS;
+drop table "TRY"."TERMS" CASCADE CONSTRAINTS;
+drop table "TRY"."COURSES" CASCADE CONSTRAINTS;
+drop table "TRY"."CLASS_STANDINGS" CASCADE CONSTRAINTS;
+drop table "TRY"."PERFORMANCE_CAPTURE_STATS" CASCADE CONSTRAINTS;
+drop table "TRY"."PERF_STATS" CASCADE CONSTRAINTS;
+drop table "TRY"."STUDENTS_SMALL" CASCADE CONSTRAINTS;
+drop table "TRY"."COURSE_ENROLLMENTS_SMALL" CASCADE CONSTRAINTS;
+drop table "TRY"."APPLICANTS_IMPORT" CASCADE CONSTRAINTS;
+drop table "TRY"."APPLICATIONS" CASCADE CONSTRAINTS;
+drop table "TRY"."APPLICATIONS_ONE_INDEX" CASCADE CONSTRAINTS;
+drop table "TRY"."APPLICATIONS_OVER_INDEXED" CASCADE CONSTRAINTS;
+drop table "TRY"."STUDENTS" CASCADE CONSTRAINTS;
+drop table "TRY"."COURSE_ENROLLMENTS" CASCADE CONSTRAINTS;
+drop table "TRY"."COURSE_OFFERINGS" CASCADE CONSTRAINTS;
+drop table "TRY"."DEGREES" CASCADE CONSTRAINTS;
+drop table "TRY"."DEGREE_REQUIREMENTS" CASCADE CONSTRAINTS;
+drop table "TRY"."STUDENT_CLASS_TERMS" CASCADE CONSTRAINTS;
+
+drop view "TRY"."V_STUDENT_GRADES";
+drop sequence "TRY"."SEQ_PERFORMANCE_CAPTURE";
+drop function "TRY"."MAP_APPLICATION_STATUS_VALUE";
+
+
+END;
+
+
+
+●index用の表領域がどうやら必要くさい。
+CREATE SMALLFILE TABLESPACE "INDEXES"
+ DATAFILE
+ '/u01/app/oracle/oradata/orcl12c/index.dbf' SIZE 100M AUTOEXTEND ON NEXT 100M MAXSIZE 150M
+ LOGGING
+ DEFAULT NOCOMPRESS NO INMEMORY
+ ONLINE
+ EXTENT MANAGEMENT LOCAL AUTOALLOCATE
+ SEGMENT SPACE MANAGEMENT AUTO;
+

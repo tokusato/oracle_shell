@@ -1,0 +1,185 @@
+●1回目
+766 rows selected.
+
+Elapsed: 00:00:00.07
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 88501975
+
+----------------------------------------------------------------------------------------------
+| Id  | Operation                     | Name         | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |              |   766 | 59748 |     8  (13)| 00:00:01 |
+|   1 |  SORT ORDER BY                |              |   766 | 59748 |     8  (13)| 00:00:01 |
+|   2 |   NESTED LOOPS                |              |   766 | 59748 |     7   (0)| 00:00:01 |
+|   3 |    TABLE ACCESS BY INDEX ROWID| DEPARTMENT   |     1 |    35 |     2   (0)| 00:00:01 |
+|*  4 |     INDEX UNIQUE SCAN         | SYS_C0012064 |     1 |       |     1   (0)| 00:00:01 |
+|*  5 |    TABLE ACCESS FULL          | EMPLOYEE     |   766 | 32938 |     5   (0)| 00:00:01 |
+----------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - access("D"."DEPTNO"=3)
+   5 - filter("E"."DEPTNO"=3)
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+        108  recursive calls
+         17  db block gets
+        148  consistent gets
+          0  physical reads
+       3056  redo size
+      26594  bytes sent via SQL*Net to client
+       1168  bytes received via SQL*Net from client
+         53  SQL*Net roundtrips to/from client
+          8  sorts (memory)
+          0  sorts (disk)
+        766  rows processed
+
+●2回目
+766 rows selected.
+
+Elapsed: 00:00:00.04
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 88501975
+
+----------------------------------------------------------------------------------------------
+| Id  | Operation                     | Name         | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |              |   766 | 59748 |     8  (13)| 00:00:01 |
+|   1 |  SORT ORDER BY                |              |   766 | 59748 |     8  (13)| 00:00:01 |
+|   2 |   NESTED LOOPS                |              |   766 | 59748 |     7   (0)| 00:00:01 |
+|   3 |    TABLE ACCESS BY INDEX ROWID| DEPARTMENT   |     1 |    35 |     2   (0)| 00:00:01 |
+|*  4 |     INDEX UNIQUE SCAN         | SYS_C0012064 |     1 |       |     1   (0)| 00:00:01 |
+|*  5 |    TABLE ACCESS FULL          | EMPLOYEE     |   766 | 32938 |     5   (0)| 00:00:01 |
+----------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - access("D"."DEPTNO"=3)
+   5 - filter("E"."DEPTNO"=3)
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+          0  recursive calls
+          0  db block gets
+         18  consistent gets
+          0  physical reads
+          0  redo size
+      26594  bytes sent via SQL*Net to client
+       1169  bytes received via SQL*Net from client
+         53  SQL*Net roundtrips to/from client
+          1  sorts (memory)
+          0  sorts (disk)
+        766  rows processed
+
+●3回目(選択条件を3,4に変更する。)
+1500 rows selected.
+
+Elapsed: 00:00:00.05
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 2823932682
+
+----------------------------------------------------------------------------------
+| Id  | Operation           | Name       | Rows  | Bytes | Cost (%CPU)| Time     |
+----------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT    |            |   750 | 58500 |     9  (12)| 00:00:01 |
+|   1 |  SORT ORDER BY      |            |   750 | 58500 |     9  (12)| 00:00:01 |
+|*  2 |   HASH JOIN         |            |   750 | 58500 |     8   (0)| 00:00:01 |
+|*  3 |    TABLE ACCESS FULL| DEPARTMENT |     2 |    70 |     3   (0)| 00:00:01 |
+|*  4 |    TABLE ACCESS FULL| EMPLOYEE   |  1500 | 64500 |     5   (0)| 00:00:01 |
+----------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   2 - access("D"."DEPTNO"="E"."DEPTNO")
+   3 - filter("D"."DEPTNO">=3)
+   4 - filter("E"."DEPTNO">=3)
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+          4  recursive calls
+          0  db block gets
+         23  consistent gets
+          0  physical reads
+          0  redo size
+      70446  bytes sent via SQL*Net to client
+       1697  bytes received via SQL*Net from client
+        101  SQL*Net roundtrips to/from client
+          1  sorts (memory)
+          0  sorts (disk)
+       1500  rows processed
+
+
+●4回目(選択条件を3,4に変更する。employee表のdeptnoにインデクスを付与)
+1500 rows selected.
+
+Elapsed: 00:00:00.09
+
+Execution Plan
+----------------------------------------------------------
+Plan hash value: 1101178727
+
+--------------------------------------------------------------------------------------------
+| Id  | Operation                     | Name       | Rows  | Bytes | Cost (%CPU)| Time     |
+--------------------------------------------------------------------------------------------
+|   0 | SELECT STATEMENT              |            |   750 | 58500 |     4  (25)| 00:00:01 |
+|   1 |  SORT ORDER BY                |            |   750 | 58500 |     4  (25)| 00:00:01 |
+|   2 |   NESTED LOOPS                |            |   750 | 58500 |     3   (0)| 00:00:01 |
+|   3 |    NESTED LOOPS               |            |   750 | 58500 |     3   (0)| 00:00:01 |
+|*  4 |     TABLE ACCESS FULL         | DEPARTMENT |     2 |    70 |     3   (0)| 00:00:01 |
+|*  5 |     INDEX RANGE SCAN          | IDX_EMP    |    38 |       |     0   (0)| 00:00:01 |
+|   6 |    TABLE ACCESS BY INDEX ROWID| EMPLOYEE   |   375 | 16125 |     0   (0)| 00:00:01 |
+--------------------------------------------------------------------------------------------
+
+Predicate Information (identified by operation id):
+---------------------------------------------------
+
+   4 - filter("D"."DEPTNO">=3)
+   5 - access("D"."DEPTNO"="E"."DEPTNO")
+       filter("E"."DEPTNO">=3)
+
+Note
+-----
+   - dynamic statistics used: dynamic sampling (level=2)
+
+
+Statistics
+----------------------------------------------------------
+          0  recursive calls
+          0  db block gets
+         25  consistent gets
+          0  physical reads
+          0  redo size
+      70446  bytes sent via SQL*Net to client
+       1696  bytes received via SQL*Net from client
+        101  SQL*Net roundtrips to/from client
+          1  sorts (memory)
+          0  sorts (disk)
+       1500  rows processed
+
+@query/emp_dept_merge.sql
+

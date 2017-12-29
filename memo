@@ -1,4 +1,41 @@
+●監視対象のSQLにするためには、ヒント句に/*+ MONITOR */を入れればOK
+select /*+ MONITOR */ /* practiceSQL2 */ COL1 || ' : ' || COL2 "Record" from TBL2 where ROWNUM <=3 ;
 
+⇒監視対象のSQLを図で見たいなら、EMExpressにログインして、
+　パフォーマンスタブ、監視対象SQLタブと進み、見たいSQLが実行された時間をグラフから指定する。
+　すると、監視対象のSQLが出力される。
+
+  【注意】
+　SQLとPLSQLとでは、出力のされ方が違うため、注意する。
+  PLSQLでは、実行計画の情報が出力されない。
+●キャッシュをクリアする方法
+  /*共有プールのクリア*/
+    ALTER SYSTEM FLUSH SHARED_POOL;
+  /*DBバッファキャッシュのクリア*/
+    ALTER SYSTEM FLUSH BUFFER_CACHE ;
+
+●スキーマオブジェクトの情報を取得するためのテーブル
+・USER_INDEXES
+  select INDEX_NAME, INDEX_TYPE, TABLE_NAME, UNIQUENESS from USER_INDEXES where INDEX_NAME = '
+・USER_CONSTRAINTS
+  col CONSTRAINT_NAME format a15
+  col CONSTRAINT_TYPE format a15
+  col TABLE_NAME format a15
+  select CONSTRAINT_NAME,CONSTRAINT_TYPE,TABLE_NAME from user_constraints;
+・USER_TAB_COLUMNS 
+  select TABLE_NAME, COLUMN_NAME, NULLABLE from USER_TAB_COLUMNS where TABLE_NAME = '
+・USER_SEGMENTS
+  select SEGMENT_NAME, SEGMENT_TYPE, TABLESPACE_NAME, BLOCKS from USER_SEGMENTS　where SEGMENT_NAME like '
+・USER_TABLES
+
+
+● /*+APPEND */  ⇒ ダイレクトパスインサートのヒント句
+insert /*+APPEND */ into tab_rep select * from INS_TEST;
+commit;
+ダイレクト・パス・インサート方式ではバッファ・キャッシュを経由しないで、ダイレクトにデータ・ファイルへ書き込みを行う為、通常よりも高速に大量データを格納できます。また、UNDOブロックの生成量も抑制される点も高速化に貢献
+
+● / 
+直前と同じSQLを実行したい場合に利用できるコマンド
 
 ●sqlplus上でshow arraysizeを実行すると、一度にフェッチする行数を表示できる。
 　フェッチ行数をデフォルトの15から変更したい場合は、set arraysize 100 などのように調整する。
@@ -33,6 +70,10 @@ alter table ＜変更前テーブル名＞ rename to ＜変更後テーブル名
 select rowid,rownum, name from test where rownum < 10;
 EOF
 
+●テーブルをtruncate
+truncateしたときは、user_tables上では、行が入っているように見えるが、
+count(*)とすると、0件になる。HWMとかがそのままになっている??
+
 ●表領域は以下のディレクトリに格納されている。(
 IOちらつかせたいなら、自身が作成する表領域は別のデバイスに作成するのがよい??)
 /u01/app/oracle/oradata/orcl12c/orcl/
@@ -52,8 +93,62 @@ col TABLE_NAME format a20
 col TABLESPACE_NAME format a20
 select TABLE_NAME, TABLESPACE_NAME from USER_TABLES;
 
-●しばちょ02でtryユーザを作成済み
+●しば02でtryユーザを作成済み
 現状create session 権限とcreate table権限を付与済み
+
+● create table tab_rep as select * from ins_test;
+の副問い合わせで作成したテーブルには、コピー元のインデクスが貼られていない。
+
+
+●表の行数を簡単に表示するSQL
+col table_name format a30
+col num_rows format 99999999999
+select table_name, num_rows from user_tables order by table_name;
+
+⇒ただし、表の統計情報の取得をONにしている必要あり。
+取得ONの方法は以下
+(ただし、プロシージャを起動するには、表の所有者であるか、ANALYZE ANY権限が必要です。SYSが所有しているオブジェクトの場合、表の所有者であるか、ANALYZE ANY DICTIONARY権限またはSYSDBA権限が必要)
+BEGIN
+	DBMS_STATS.GATHER_TABLE_STATS(
+		OWNNAME       => 'TRY'
+		,TABNAME      => 'INS_TEST'
+		,METHOD_OPT   => 'FOR ALL INDEXED'
+		,CASCADE      => FALSE
+	);
+END;
+/
+
+実行して、統計情報が取得できたかどうかは以下のSQL文で確認可能
+ALTER SESSION SET NLS_DATE_FORMAT='yyyy-mm-dd hh24:mi:ss';
+col NAME format a30
+SELECT TABLE_NAME NAME, LAST_ANALYZED
+  FROM USER_TABLES
+WHERE TABLE_NAME = 'INS_TEST';
+
+
+
+
+###################################################
+●ループ(insertの書き方)
+set timing on
+
+DROP TABLE INS_TEST;
+
+CREATE TABLE INS_TEST (
+	id NUMBER,
+	letter VARCHAR(100)
+);
+
+begin
+FOR i IN 1..1000000 LOOP
+     INSERT INTO INS_TEST VALUES(i, RPAD(TO_CHAR(i),100,'Z'));
+   END LOOP;
+   COMMIT;
+END;
+/
+
+
+
 
 ●テスト用テーブル作成SQL文
 

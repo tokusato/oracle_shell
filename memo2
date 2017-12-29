@@ -1,6 +1,7 @@
 ●きれいな書式でテーブルの内容を出力(print_tableプロシージャの定義が必要)
  exec print_table('select * from USER_TAB_STATISTICS where TABLE_NAME = ''TBL2''');
 
+<<<<<<< HEAD
 ●その表領域のUNDO保存保証が有効かを確認するためのSQL。
 　⇒無効にするためには、NO GUARANTEEを指定してやればよい。
 
@@ -11,3 +12,50 @@ DBCS サービスの起動
 ＜for Linux＞
 
 curl -i -X POST -u "user_name:password" -H "X-ID-TENANT-NAME:identity_domain" -H "Content-Type:application/json" -d '{"lifecycleState": "start"}' endpoint/paas/service/dbcs/api/v1.1/instances/identity_domain/service_name
+=======
+●統合監査
+統合された表⇒sys.unified_audit_trail
+
+show parameter audit
+NAME                                 TYPE                 VALUE
+------------------------------------ -------------------- ------------------------------
+audit_file_dest                      string               /u01/app/oracle/admin/orcl12c/
+                                                          adump
+audit_sys_operations                 boolean              TRUE
+audit_syslog_level                   string
+audit_trail                          string               DB
+unified_audit_sga_queue_size         integer              1048576
+
+統合監査のデフォルトモードはキュー書き込みモード。
+監査レコードはSGAのキューに書き込まれる。
+フラッシュするためには、以下を実行すること。
+EXEC SYS.DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL
+
+●統合監査の有効性チェック
+select value from v$option where parameter like 'Unified%';
+⇒Trueと表示されること。
+
+●統合監査で登場するユーザの権限
+grant audit_admin to try ;
+⇒監査設定の構成、監査ポリシーの作成・管理
+grant audit_viewer to try ;
+⇒監査データの表示と分析
+
+●監査ポリシーの作成
+CREATE AUDIT POLICY policy_try_del ACTIONS delete ON try.test;
+
+●監査ポリシーの作成(FGA)
+execute dbms_fga.add_policy(-             
+   object_schema   => 'try',-           --監査対象スキーマ指定
+   object_name     => 'test',-        --監査対象オブジェクト指定
+   policy_name     => 'aud_obj_policy',-  --監査ポリシー指定
+   audit_condition => 'c id>=100',-         --監査条件指定
+   audit_column    => 'c id',-            --監査カラム指定
+   enable          => true,-              --監査ポリシーを有効にする
+   statement_types => 'update');
+
+●
+初回起動時のメモ
+以下で接続し、startupコマンドを実行する。(接続先は、ルートDBであり、コンテナDBのorclではない)
+conn sys/oracle@orcl12c as sysdba
+
