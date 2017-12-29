@@ -27,3 +27,14 @@ git push origin gitstudy
 ●git pullのブランチ指定
 git pull origin gitstudy
 
+●gitのコミット状態をグラフ表示
+git log --graph --oneline oracle
+
+
+ワークツリーは作業領域、インデックスはワークツリーの変更を記録したファイル、HEADはリポジトリの最新commitを指すものとします。
+●インデクスとHEADの差分確認
+git diff --cached
+
+●ワークツリーとHEADの差分を確認
+git diff HEAD
+
