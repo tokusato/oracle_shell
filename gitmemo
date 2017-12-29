@@ -38,3 +38,11 @@ git diff --cached
 ●ワークツリーとHEADの差分を確認
 git diff HEAD
 
+git reset --soft HEAD^を実行するとHEADの最新commit結果だけが取り消される。
+git diffとgit diff --cachedをを実行するとcommit前の状態にもどっていることを確認できます。
+コミットを捨てるイメージです。
+HEADやHEAD^とありますが、HEADが現在の状態で、HEAD^はHEADの親を指すみたいです
+
+●コミットの詳細を表示する。
+git show 6ef5a010b1801c98725989c377a10c92276cb357
+
