@@ -1,0 +1,9 @@
+cat /etc/oracle-release
+
+yum repolist
+
+yum install dtrace-utils
+yum install dtrace-modules-`uname -r`
+
+modprobe  fasttrap
+

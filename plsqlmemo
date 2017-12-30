@@ -1,0 +1,15 @@
+
+●users表領域にテーブルを作成し、そこに対してループでデータを格納する。
+create table plsql_test (id number primary key) tablespace users;
+alter table plsql_test add (numchar varchar2(20) default 'abc' not null);
+
+
+
+begin
+for i in 1..1000000 loop
+     insert into TBL2 values(i, rpad(to_char(i),100,'A'));
+   end loop;
+   commit;
+end;
+/
+
