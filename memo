@@ -308,8 +308,82 @@ Predicate Information (identified by operation id):
 col STALE_PERCENT format a10 ;
 select TABLE_NAME, DBMS_STATS.GET_PREFS(pname => 'STALE_PERCENT', ownname => 'TRY', tabname => TABLE_NAME) "STALE_PERCENT" from USER_TABLES;
 
+●ALTER DATABASE MOUNTの操作方法
+[oracle@localhost oracle_shell]$ sqlplus /nolog
+SQL> startup nomount
+SP2-0640: Not connected
+#####################################
+SQL> conn sys/oracle as sysdba
+#####################################
+Connected.
+SQL> alter database mount;
+alter database mount
+*
+ERROR at line 1:
+ORA-65040: operation not allowed from within a pluggable database
 
 
+●ORA-12528が出たときの対処法
+ORA-12528: TNS:listener: all appropriate instances are blocking new connections
+
+Step1 まずlsnrctl status コマンドでログイン状況を確認する。
+
+[oracle@localhost oracle_shell]$ lsnrctl status
+(中略)
+  (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=localhost)(PORT=9999))(Presentation=HTTP)(Session=RAW))
+Services Summary...
+Service "51c99766d7e2568de0530100007f4fae" has 1 instance(s).
+  Instance "orcl12c", status BLOCKED, has 1 handler(s) for this service...
+Service "orcl" has 1 instance(s).
+  Instance "orcl12c", status BLOCKED, has 1 handler(s) for this service...
+Service "orcl12c" has 2 instance(s).
+  Instance "orcl12c", status UNKNOWN, has 1 handler(s) for this service...
+  Instance "orcl12c", status BLOCKED, has 1 handler(s) for this service...
+Service "orcl12cXDB" has 1 instance(s).
+  Instance "orcl12c", status BLOCKED, has 1 handler(s) for this service...
+The command completed successfully
+
+
+●ルート権限で、ポート番号1521を使っているアプリケーションを調べる
+注意：root権限でないと正しく表示されない。
+sudo lsof -i:1521
+
+全部見たいときは、
+sudo lsof -i
+※ヘッダ情報は以下
+COMMAND     PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+tnslsnr   20611 oracle   15u  IPv4 146630      0t0  TCP *:distinct (LISTEN)
+tnslsnr   20611 oracle   16u  IPv4 146632      0t0  TCP *:8802 (LISTEN)
+tnslsnr   20611 oracle   17u  IPv4 146634      0t0  TCP *:tproxy (LISTEN)
+rpcbind   29496    rpc    4u  IPv4  15615      0t0  TCP *:sunrpc (LISTEN)
+rpcbind   29496    rpc    7u  IPv4  91580      0t0  UDP *:sunrpc
+
+
+●nomountで起動するための方法
+
+Step1 shutdown 
+
+Step2 (これなくてもできた)
+#conn /nolog
+#conn sys/oracle@orcl12c as sysdba
+
+Step3
+startup nomount;
+
+Step4
+alter database mount;
+
+Step5(データベースをアーカイブログモードに変更)
+ALTER DATABASE ARCHIVELOG;
+
+Step6 (アーカイブログモードの確認)
+archive log list
+Database log mode              Archive Mode
+Automatic archival             Enabled
+Archive destination            USE_DB_RECOVERY_FILE_DEST
+Oldest online log sequence     54
+Next log sequence to archive   56
+Current log sequence           56
 
 
 

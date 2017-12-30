@@ -1,0 +1,35 @@
+#1
+10 表領域をオフラインにする。
+alter tablespace users offline;
+
+12 ORACLE_SID値をわたし、ORACLE_HOMEとPATH LD_LIBRARY_PATH環境変数を設定する。
+(LD_LIBRARY_PATH ディレクトリを一時的に共有ライブラリ検索パスに追加) 
+. oraev 
+⇒+ASMというORACLE_SIDを指定すればASMが構成されることが分かる。
+
+12 Oracle高可用性サービスの自動起動を確認する。(ただし、このコマンドはgridのコマンド)
+ crsctl config has
+
+13  
+select count(*) from v$asm_diskgroup;
+⇒TYPEの値からディスクのミラー具合が分かる。
+  NORMAL=>通常の2方向の冗長化、HIGH=>3方向の冗長化、EXTERN⇒冗長化なし。
+  NORMALなら、FREE_MB列に記載の未使用領域の半分を利用することができる。
+
+
+#3 dbinstance
+22 SPファイル(初期化パラメタファイル)の格納先を調査
+show parameter spfile
+⇒/u01/app/oracle/product/12.2/db_1/dbs/spfileorcl12c.ora
+
+SPFILEはインスタンス起動後に再作成できないし、STARTUPコマンドのファイルとして明確に指定できない。
+PFILEは可能
+
+
+
+
+
+
+
+
+
