@@ -59,3 +59,14 @@ execute dbms_fga.add_policy(-
 以下で接続し、startupコマンドを実行する。(接続先は、ルートDBであり、コンテナDBのorclではない)
 conn sys/oracle@orcl12c as sysdba
 
+●プロセスのメモ
+https://docs.oracle.com/cd/E60665_01/db112/REFRN/bgprocesses.htm
+
+●startup や shutdown に関するメモ
+startupは、OS認証でと書いてある。ああなるほど。つまりインスタンスはアイドル状態にあるから、インスタンス認証はできない、つまりOracleのsysでは接続できないってことだ。当たり前っちゃ当たり前だね。
+というわけで、OS認証管理者権限でログインをしてみる。
+
+sqlplus /nolog
+
+
+
