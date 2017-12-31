@@ -386,11 +386,27 @@ Next log sequence to archive   56
 Current log sequence           56
 
 
+●メトリック閾値を超えたときの統計情報の出力先ビュー
+DBA_OUTSTANDING_ALERTS
 
 
+●基礎表の検索(linux 上で検索する場合は、$の前にエスケープ文字の\をつける必要あり)
+SQL> Disconnected from Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
+[oracle@localhost oracle_shell]$ sqlplus sys/oracle@orcl as sysdba << eof
+select count(*) from v_\$fixed_table;
+eof
 
+Connected to:
+Oracle Database 12c Enterprise Edition Release 12.2.0.1.0 - 64bit Production
 
+SQL>
+  COUNT(*)
+----------
+      2793
 
+●ユーザがテーブルを作成できるようになるまでには、以下の権限付与が必要
+ GRANT UNLIMITED TABLESPACE TO DBLINK_USER;
+ GRANT CREATE TABLE TO DBLINK_USER;
 
 
 

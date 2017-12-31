@@ -25,6 +25,64 @@ show parameter spfile
 SPFILEはインスタンス起動後に再作成できないし、STARTUPコマンドのファイルとして明確に指定できない。
 PFILEは可能
 
+#4
+LREGプロセスによってリスナーに情報登録することを動的サービス登録。
+以下初期化パラメタが正しく設定されている必要あり。
+G[oracle@localhost oracle_shell]$ ./connectOracle.sh
+show parameter service
+
+NAME                                 TYPE                 VALUE
+------------------------------------ -------------------- ------------------------------
+service_names                        string               orcl12c
+show parameter instance
+
+NAME                                 TYPE                 VALUE
+------------------------------------ -------------------- ------------------------------
+active_instance_count                integer
+cluster_database_instances           integer              1
+instance_abort_delay_time            integer              0
+instance_groups                      string
+instance_mode                        string               READ-WRITE
+instance_name                        string               orcl12c
+instance_number                      integer              0
+instance_type                        string               RDBMS
+open_links_per_instance              integer              4
+parallel_instance_group              string
+show parameter local_listener
+
+NAME                                 TYPE                 VALUE
+------------------------------------ -------------------- ------------------------------
+local_listener                       string               LISTENER_ORCL12C
+show parameter remote_listener
+
+NAME                                 TYPE                 VALUE
+------------------------------------ -------------------- ------------------------------
+remote_listener                      string
+
+84 listener.oraファイルの再読み込み
+lsnrctl reload
+
+39
+共有サーバ接続でできないのは、起動や停止などの管理と、RMANを用いたバックアップとリカバリ
+
+
+p108 データベースリンクを作成する。connect toにcurrent_userを指定すると現行ユーザのDBリンクを作成することができる。public database linkならみんながアクセスできる。
+SQL> create database link remote connect to toku identified by tokusato0630 using 'orcl12c';
+
+Database link REMOTE created.
+
+Elapsed: 00:00:01.557
+SQL> show user
+USER is "TRY"
+
+QL> select * from link_test@remote;
+no rows selected
+Elapsed: 00:00:01.413
+
+SQL> select * from link_test;no rows selected
+Elapsed: 00:00:00.016
+
+⇒ローカルのものも検索できている。
 
 
 
