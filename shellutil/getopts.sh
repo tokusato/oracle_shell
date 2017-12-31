@@ -1,7 +1,7 @@
 #!/bin/bash
 
-#./getopts.sh  -a -d aaa
-#./getopts.sh   -d aaa
+#./getopts.sh  -c -d aaa
+######./getopts.sh   -d aaa
 
 usage_exit() {
         echo "Usage: $0 [-c] [-m dir] item ..." 1>&2
@@ -24,7 +24,7 @@ done
 
 shift $((OPTIND - 1))
 
-echo $FLAG_C
-echo $VALUE_M
+echo $FLAG_C #1
+echo $VALUE_M #aaa
 
 
