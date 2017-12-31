@@ -125,18 +125,165 @@ EXEC DBMS_PRIVILEGE_CAPTURE.ENABLE_CAPTURE ('capture');
 ⇒PL/SQL procedure successfully completed.と出ているが、結果はどこに格納されている？
 
 
+CREATE PROFILE sevear_limit LIMIT 
+   SESSIONS_PER_USER          10
+   CPU_PER_SESSION            2 
+   CPU_PER_CALL               300 
+   CONNECT_TIME               45 
+   LOGICAL_READS_PER_SESSION  DEFAULT 
+   LOGICAL_READS_PER_CALL     1000 
+   PRIVATE_SGA                15K;
+
+
 #6
 
 58 データファイルに関する情報を表示するSQL
 select file_id, TABLESPACE_NAME, BYTES, BLOCKS, STATUS, USER_BYTES, USER_BLOCKS, ONLINE_STATUS,  file_name from dba_data_files;
 
+59 データファイルにエクステントを割り当てる
+SQL> create table TRY."block_test" (id number);
+
+SQL> alter table TRY."block_test"  allocate extent(size 300M);
+ORA-01536: space quota exceeded for tablespace 'USERS'
+
+SQL> alter table TRY."block_test"  allocate extent(size 1M);
+Table TRY."block_test" altered.
 
 
+60 OMF DB内のファイルを直接管理する必要をなくすための機能
+サイズを指定しないと、100Mの自動拡張有効なデータファイルが作成される。
+●データファイルが自動的に作成される箇所
+/u01/app/oracle/oradata/orcl12c/
+
+SQL> show parameter db_create
+NAME                        TYPE   VALUE
+--------------------------- ------ -----
+db_create_file_dest         string       ⇒OMFのデータファイルが作成される箇所
+db_create_online_log_dest_1 string       ⇒OMFの制御ファイルとREDOログが作成される箇所
+db_create_online_log_dest_2 string
+db_create_online_log_dest_3 string
+db_create_online_log_dest_4 string
+db_create_online_log_dest_5 string
+
+ASMでは内部的にOMFファイルが自動的に利用されている。
+
+●作り方
+alter system set db_create_file_dest = '/u01/app/oracle/oradata/orcl12c/';
+create tablespace ts02 datafile size 30M;
+●確認方法
+select file_name, bytes, autoextensible from dba_data_files where tablespace_name in ('TS02');
+
+⇒/u01/app/oracle/oradata/orcl12c/ORCL12C/51C99766D7E2568DE0530100007F4FAE/datafile/o1_mf_ts02_f4ksx4w
+orcl12cの直下ではなかった。
+
+(※)
+OMFのファイルはDBから消すと、物理ファイルごとなくなるが、非OMFファイルはDBから消しても物理ファイルが残ったままになっている。(ただし、INCLUDING CONTENTS AND DATAFILES を指定すれば消える)
+中身の入った表領域を削除する場合には、drop tablespace ~ including contents文を実行する。
 
 
+#7
+表領域中の表のセグメントの縮小
+Step1 表領域作成
+自動セグメント領域管理
+create tablespace test1 datafile '/u01/app/oracle/oradata/orcl12c/test01.dbf' size 5M;
+空きリスト領域管理⇒これは表の圧縮できない。
+create tablespace test2 datafile '/u01/app/oracle/oradata/orcl12c/test02.dbf' size 5M segment space management manual;
+
+Step2 テーブル作成
+create table t1 (id number) tablespace test1;
+create table t2 (id number) tablespace test2;
+
+Step3 行移動の有効化(表単位の設定)
+alter table t1 enable row movement;
+
+Step4 表のセグメントの縮小
+alter table t1 shrink space ;
+alter table t2 shrink space ;
+
+(*)SHRINK SPACE COMPACT句は圧縮のみを実行。解放はしないが、これは、オンライン中に実行することが可能。
 
 
+●オンラインテーブル移動
+alter table xxx moce; では、実行するために、元のセグメントの2倍の領域が必要。moveでも最初はコピーして後から消すから。
+しかも移動している最中は、DMLを受け付けることができない。⇒オンライン中にやるのは、よくない。
+しかも索引のROWIDは変更されないため、再構築要。
+ただし、HWMを下げることが可能。行移行や行遷移を解消することが可能。
+⇒ALTER TABLE SHRINKとのコンボで使えばいいのではないか？
 
 
+select INDEX_NAME,INDEX_TYPE,TABLE_OWNER,TABLE_NAME,TABLE_TYPE,UNIQUENESS,COMPRESSION,PREFIX_LENGTH,TABLESPACE_NAME,INITIAL_EXTENT,NEXT_EXTENT from user_indexes where TABLE_OWNER = 'TRY';
 
+
+alter index try.idx_t1 rebuild;
+索引再構築のみONLINE句を利用でき、索引再構築中の索引の更新が許可されている。
+alter index try.idx_t1 rebuild online;
+
+
+●オンライン再定義 ⇒ 流れを覚える。
+変更後の定義で仮表を作り、DBMS_REDEFINITIONパッケージで再定義。
+Step1 仮表create
+create table try.t1_copy as select * from try.t1;
+
+Step2 
+exec DBMS_REDEFINITION.START_REDEF_TABLE ('TRY', 't1', 't1_copy');
+
+Step3 後処理(テーブルのスワップ)
+exec DBMS_REDEFINITION.FINISH_REDEF_TABLE ('TRY', 't1', 't1_copy');
+
+Step4 仮表の削除
+
+
+●圧縮と縮小
+圧縮：表セグメントのサイズはそのまま。行移行と行遷移のレコードは減少 ⇒オンライン中にできるというメリット
+解放：表セグメントのサイズは縮小　　。行移行と行遷移のレコードは減少
+
+●圧縮
+・基本表圧縮：ダイレクトロード時のみ圧縮、ブロック内の連続空き領域の最大化、デフォのPCTFREEが0になる。
+create table try.comp_basic(id number) row store compress basic;
+
+・拡張行圧縮：ダイレクトロード＋通常のDML、ブロック内の重複値値をポインタ化
+create table try.comp_advanced(id number) row store compress advanced;
+
+●セグメント遅延作成
+create table defer_table (id number, constraint pk_defer primary key(id)) segment creation deferred;
+ORA-14224: Deferred segment creation is not supported for this schema
+⇒sysスキーマでは、セグメント遅延作成は不可能。segment creation immediateは可能。
+  索引構成表(Index Only Table IOT)やクラスタ化された表も不可能。
+　索引構成表は、索引とデータ部分が一緒になった表のこと。データ全体が最初から、BTreeインデクスに格納しているもの。
+  表の作成時には、表領域の空きのチェックがされない。⇒されてたら、この機能のうまみなし。(不要の可能性のあるテーブルがたくさんあるアプリなど)
+
+
+  cf.索引構成表と対比して、通常の表は、「ヒープ表とよばれる。」データの配置についてのしばりがない。
+  IOT表のメリットとしては、以下2つ。
+　・主キーによるレンジスキャン(ソート済みであり、テーブルスキャンがインデクススキャンに相当するため)
+  ・データの圧縮率が高い(似たような値が隣同士になっているため。)
+
+作成時の構文は以下
+  create table xxx () organization index;
+
+Step1 表を作ったばかりでは、データが挿入されていない。
+select BLOCKS, EXTENTS, SEGMENT_NAME from user_segments;
+
+Step2 表にデータを挿入すると、ブロックと
+SQL> select BLOCKS, EXTENTS, SEGMENT_NAME from user_segments where SEGMENT_NAME LIKE '%DEFER%' ;
+    BLOCKS    EXTENTS SEGMENT_NAME
+----------------------------------------------------------------------------------------------------
+        40          5 DEFER_TABLE
+        56          7 PK_DEFER
+
+Step3 さらに、索引をUNUSABLEとすると割り当てられていた索引のセグメントが削除される。
+    BLOCKS    EXTENTS SEGMENT_NAME
+----------------------------------------------------------------------------------------------------
+        40          5 DEFER_TABLE
+
+Step4 alter index PK_DEFER rebuildで復活⇒あれ？セグメントが最初より減っている??
+    BLOCKS    EXTENTS SEGMENT_NAME
+----------------------------------------------------------------------------------------------------
+        40          5 DEFER_TABLE
+        48          6 PK_DEFER
+
+●再開可能領域割り当て機能
+alter session enable resumable;
+⇒ただし、resumable権限が必要
+  grant resumable to try;
 

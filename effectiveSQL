@@ -5,3 +5,11 @@
 ●テーブルがどの表領域に属しているか
 select table_name,tablespace_name from user_tables
 where rownum < 5 order by tablespace_name  ;
+
+●テーブルのブロック数を求める
+select OWNER, TABLESPACE_NAME, EXTENT_ID, FILE_ID, BLOCK_ID, BLOCKS, BYTES FROM DBA_EXTENTS ;
+
+select OWNER, TABLESPACE_NAME, EXTENT_ID, FILE_ID, BLOCK_ID, BLOCKS, BYTES FROM DBA_EXTENTS where OWNER='try';
+
+
+
