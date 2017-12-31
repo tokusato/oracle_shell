@@ -408,6 +408,20 @@ SQL>
  GRANT UNLIMITED TABLESPACE TO DBLINK_USER;
  GRANT CREATE TABLE TO DBLINK_USER;
 
+●プライマリーキーのオブジェクト数を明示的に指定したcreate table文
+create table t1 (
+  id number,
+  constraint pk_emp primary key(id)
+) ;
+
+●統計情報取得(スキーマ単位)
+execute dbms_stats.gather_schema_stats( ownname=>'try', options=>'gather auto');
+
+
+
+
+
+
 
 
 
