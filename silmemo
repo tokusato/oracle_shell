@@ -100,9 +100,29 @@ tnsnames.oraファイルにSERVER=DEDICATEDがあれば、専用接続モード�
 
 #5 セキュリティ
 
+プロファイル作成
+create profile strict_login limit failed_login_attempts 3 ;
+作ったプロファイルをもとにユーザを作成
+create user strict_login_user identified by oracle profile strict_login;
 
+アカウントがロックされたら、以下のコマンドでアカウントロックを解除。
+(アカウントがロックされてもそのユーザがもつスキーマオブジェクトは利用可能なまま)
+alter user strict_login_user account unlock;
 
+SQL> drop profile strict_login;
+ORA-02382: profile STRICT_LOGIN has users assigned, cannot drop without CASCADE
+⇒誰かが使っているプロファイルの場合は、CASCADEオプションをつけて削除する必要がある。
 
+権限分析
+BEGIN
+ DBMS_PRIVILEGE_CAPTURE.CREATE_CAPTURE(
+  name          => 'capture',
+  description   => 'Captures',
+  type          => DBMS_PRIVILEGE_CAPTURE.G_DATABASE);
+END;
+/
+EXEC DBMS_PRIVILEGE_CAPTURE.ENABLE_CAPTURE ('capture');
+⇒PL/SQL procedure successfully completed.と出ているが、結果はどこに格納されている？
 
 
 #6
