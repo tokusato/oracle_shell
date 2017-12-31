@@ -1,0 +1,23 @@
+
+trap -l 
+
+trap -p
+
+trap 'rm srvdf.${today} ; exit 1'  1 2 3 15
+
+
+●Ctrl + Cで強制終了した後に処理を追加したい場合は以下のように書けばオッケー。
+　(trapコマンドを書いた後に無限ループを書くなど、、、) 
+function last(){
+  status=$?
+  echo "終了しました。 ステータス：${status}"
+  echo "ファイル出力時刻：$1"
+  exit ${status}
+}
+
+#trap -lコマンドで終了コードの一覧を表示することができる。
+trap "last ${date}" {1,2,3,15}
+
+
+
+
