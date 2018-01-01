@@ -287,3 +287,117 @@ alter session enable resumable;
 ⇒ただし、resumable権限が必要
   grant resumable to try;
 
+
+#8 
+●一時UNDO
+SQL> show parameter temp_undo
+NAME              TYPE    VALUE
+----------------- ------- -----
+temp_undo_enabled boolean TRUE
+
+⇒有効にするかどうかはインスタンスレベル、セッションレベルでの設定をすることができる。
+alter system  set temp_undo_enabled = true;
+alter session set temp_undo_enabled = true;
+
+●FLASHBACK TABLE
+flashback table t1_copy to before drop;
+⇒undo保存領域を用いてユーザエラーを回避できるよ。
+
+●UNDO表領域を複数作成できるが、同時にONLINEにできるUNDO表領域は1つのみ。⇒以下のパラメタで表示されるもののみ。
+ほかのUNDO表領域を作成して、onlineにしてもエラーにはならなかった。
+
+SQL> show parameter undo_tablesp
+NAME            TYPE   VALUE
+--------------- ------ --------
+undo_tablespace string UNDOTBS1
+
+●UNDO保存保証の有効化
+SQL> alter tablespace UNDOTBS1 retention guarantee;
+
+ロックしているセッションを探すSQL
+SELECT SID, SERIAL# FROM V$SESSION WHERE SID IN ( SELECT SID FROM V$LOCK WHERE TYPE IN (‘TM’,’TX’)) 
+
+#10
+監査に関連するパラメタ
+SQL> show parameter AUDIT
+NAME                         TYPE    VALUE
+---------------------------- ------- -----------------------------------
+audit_file_dest              string  /u01/app/oracle/admin/orcl12c/adump
+audit_sys_operations         boolean TRUE  ⇒ 監査ログのDBA監査が有効になっている。
+audit_syslog_level           string
+audit_trail                  string  DB
+unified_audit_sga_queue_size integer 1048576
+
+システム全体にわたるユーザー別の現在の文監査
+select * from DBA_STMT_AUDIT_OPTS ;
+システム全体にわたってユーザー別に監査されている現行の権限監査
+select * from DBA_PRIV_AUDIT_OPTS ;
+
+audit_trail　：　データベースの監査の有効化（NONE以外）、無効化（NONE）を制御する初期化パラメータ
+   NONE：　標準監査使用禁止（デフォルト）
+   OS　：　監査レコードをOSファイルへ書き込む
+   DB　：　OSファイルへ常に書き込まれる監査レコードを除いてSYS.AUD$へ書き込む
+
+●FGA監査の設定・確認
+ BEGIN
+	DBMS_FGA.ADD_POLICY(
+		OBJECT_NAME => 'S_TABLE',
+		POLICY_NAME => 'DANGER_OPE',
+		AUDIT_COLUMN => 'NAME',
+		AUDIT_CONDITION => 'NAME = ''ADMIN'' ',     -- ADMIN を監査
+		STATEMENT_TYPES => 'INSERT,UPDATE,DELETE'
+	);
+ END;
+ /
+ SELECT DB_USER || ':' || SQL_TEXT FGA_LOG  FROM DBA_FGA_AUDIT_TRAIL WHERE TIMESTAMP >= SYSDATE - INTERVAL '1' MINUTE;
+
+
+●統合監査
+
+・キュー書き込みモードの確認
+select PARAMETER_VALUE from dba_audit_mgmt_config_params where PARAMETER_NAME = 'AUDIT WRITE MODE';
+PARAMETER_VALUE
+----------------------------------------------------------------------------------------------------
+QUEUED WRITE MODE
+
+・監査キューのフラッシュ
+exec dbms_audit_mgmt.flush_unified_audit_trail;
+
+統合監査においてキュー書き込みモードを廃止する。⇒即座にDBに書き込む
+BEGIN 
+  DBMS_AUDIT_MGMT.SET_AUDIT_TRAIL_PROPERTY(
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_WRITE_MODE,
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_IMMEDIATE_WRITE
+  );
+END;
+/
+
+キュー書き込みモードにしたいなら、
+BEGIN
+  DBMS_AUDIT_MGMT.SET_AUDIT_TRAIL_PROPERTY(
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_UNIFIED,
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_WRITE_MODE,
+    DBMS_AUDIT_MGMT.AUDIT_TRAIL_QUEUED_WRITE
+  );
+END;
+/
+
+●FGA監査
+⇒定義次第かもしれないが、SYSスキーマの持つオブジェクトに対する監査ポリシの追加は無効
+ BEGIN
+        DBMS_FGA.ADD_POLICY(
+                OBJECT_NAME => 'SAMPLE_TABLE',
+                POLICY_NAME => 'CHECK_DANGER',
+                AUDIT_COLUMN => 'NAME',
+                AUDIT_CONDITION => 'NAME = ''ADMIN'' ',     -- ADMIN を監査
+                STATEMENT_TYPES => 'INSERT,UPDATE,DELETE'
+        );
+ END;
+ORA-28103: adding a policy to an object owned by SYS is not allowed
+
+
+●統合監査を有効化するための方法
+make -f ins_rdbms.mk uniaud_on ioracle ORACLE_HOME=$ORACLE_HOME
+
+
