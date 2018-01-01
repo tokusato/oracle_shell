@@ -5,3 +5,5 @@
   これを実行すると、list backupset などのコマンドを受け付けてくれる。
  connect target sys/oracle ;
 
+
+aaa
