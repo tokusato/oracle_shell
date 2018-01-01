@@ -3,5 +3,36 @@
 
 ●rmanからターゲットデータベースに接続するためのコマンド
   これを実行すると、list backupset などのコマンドを受け付けてくれる。
- connect target sys/oracle ;
+ rman
+ connect target sys/oracle@orcl12c ;
+ connect target sys/oracle ;  ⇒NG。これでは、PDBに接続されてしまう。
+
+●PDBからRMANの操作をすると、以下のメッセージが出力される。
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2;
+⇒RMAN-07536: command not allowed when connected to a Pluggable Database
+
+●制御ファイルの自動バックアップ機能
+ CONFIGURE CONTROLFILE AUTOBACKUP ON;
+
+●設定の表示
+RMAN> show all;
+
+RMAN configuration parameters for database with db_unique_name ORCL12C are:
+CONFIGURE RETENTION POLICY TO REDUNDANCY 2; ⇒ 2世代分のバックアップを取得する。
+CONFIGURE BACKUP OPTIMIZATION OFF; # default
+CONFIGURE DEFAULT DEVICE TYPE TO DISK; # default
+CONFIGURE CONTROLFILE AUTOBACKUP ON;
+CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
+CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
+CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/backup/%U'; ⇒ バックアップは/backupの別デバイスに出力するように設定
+CONFIGURE MAXSETSIZE TO UNLIMITED; # default
+CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
+CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
+CONFIGURE COMPRESSION ALGORITHM 'BASIC' AS OF RELEASE 'DEFAULT' OPTIMIZE FOR LOAD TRUE ; # default
+CONFIGURE RMAN OUTPUT TO KEEP FOR 7 DAYS; # default
+CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
+CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/12.2/db_1/dbs/snapcf_orcl12c.f'; # default
+
 

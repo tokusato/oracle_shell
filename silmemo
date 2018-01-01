@@ -400,4 +400,37 @@ ORA-28103: adding a policy to an object owned by SYS is not allowed
 ●統合監査を有効化するための方法
 make -f ins_rdbms.mk uniaud_on ioracle ORACLE_HOME=$ORACLE_HOME
 
+#11 backup
+●インスタンスリカバリ
+SQL> show parameter mttr ⇒ インスタンスリカバリの調整パラメタ
+NAME                   TYPE    VALUE
+---------------------- ------- -----
+fast_start_mttr_target integer 0
+
+以下にインスタンスリカバリが7200秒以内に収まるように当該パラメタを設定する手順を示す。
+SQL> alter session set container = cdb$root;
+Session altered.
+SQL>  alter system set fast_start_mttr_target = 7200;
+System SET altered.
+
+
+●管理者が意図的にチェックポイントを発生
+alter system checkpoint;
+また、表領域のオフライン、DBの停止などでもチェックポイントは発生する。
+
+●
+SQL> show parameter recovery
+NAME                       TYPE        VALUE                               
+-------------------------- ----------- ------------------------------------------
+db_recovery_file_dest      string      /u01/app/oracle/fast_recovery_area/orcl12c
+db_recovery_file_dest_size big integer 5G
+recovery_parallelism       integer     0
+remote_recovery_file_dest  string
+
+[oracle@localhost oracle_shell]$ find /u01/ -name control0*.ctl
+/u01/app/oracle/fast_recovery_area/orcl12c/control02.ctl  ⇒バックアップ(高速リカバリ領域に作成されたもの)
+/u01/app/oracle/oradata/orcl12c/control01.ctl             ⇒本体
+
+
+
 
