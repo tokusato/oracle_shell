@@ -26,7 +26,7 @@ CONFIGURE CONTROLFILE AUTOBACKUP FORMAT FOR DEVICE TYPE DISK TO '%F'; # default
 CONFIGURE DEVICE TYPE DISK PARALLELISM 1 BACKUP TYPE TO BACKUPSET; # default
 CONFIGURE DATAFILE BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
 CONFIGURE ARCHIVELOG BACKUP COPIES FOR DEVICE TYPE DISK TO 1; # default
-CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/backup/%U'; ⇒ バックアップは/backupの別デバイスに出力するように設定
+CONFIGURE CHANNEL DEVICE TYPE DISK FORMAT   '/run/media/oracle/F411-7650/%U'; ⇒ バックアップは/backupの別デバイスに出力するように設定
 CONFIGURE MAXSETSIZE TO UNLIMITED; # default
 CONFIGURE ENCRYPTION FOR DATABASE OFF; # default
 CONFIGURE ENCRYPTION ALGORITHM 'AES128'; # default
@@ -36,5 +36,28 @@ CONFIGURE ARCHIVELOG DELETION POLICY TO NONE; # default
 CONFIGURE SNAPSHOT CONTROLFILE NAME TO '/u01/app/oracle/product/12.2/db_1/dbs/snapcf_orcl12c.f'; # default
 
 
+●どこにバックアップを作成するか。(つまり、どこにUSBがマウントされているか)
+/run/media/oracle/F411-7650はOracleLinuxが勝手に作成したUSBのマウントポイント
 
-aaa
+●バックアップ成功の様子⇒今度は、ユーザファイルでバックアップし、リストアまでできるようになる。
+RMAN> backup DATAFILE '/u01/app/oracle/oradata/orcl12c/orcl/system01.dbf';
+
+Starting backup at 01-JAN-18
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00009 name=/u01/app/oracle/oradata/orcl12c/orcl/system01.dbf
+channel ORA_DISK_1: starting piece 1 at 01-JAN-18
+channel ORA_DISK_1: finished piece 1 at 01-JAN-18
+piece handle=/run/media/oracle/F411-7650/02snk5i2_1_1 tag=TAG20180101T214641 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:01:55
+Finished backup at 01-JAN-18
+
+Starting Control File and SPFILE Autobackup at 01-JAN-18
+piece handle=/u01/app/oracle/fast_recovery_area/orcl12c/ORCL12C/autobackup/2018_01_01/o1_mf_s_964302517_f4nckc3q_.bkp comment=NONE
+Finished Control File and SPFILE Autobackup at 01-JAN-18
+
+
+
+
+
