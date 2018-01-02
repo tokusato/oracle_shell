@@ -57,7 +57,58 @@ Starting Control File and SPFILE Autobackup at 01-JAN-18
 piece handle=/u01/app/oracle/fast_recovery_area/orcl12c/ORCL12C/autobackup/2018_01_01/o1_mf_s_964302517_f4nckc3q_.bkp comment=NONE
 Finished Control File and SPFILE Autobackup at 01-JAN-18
 
+●データ復旧用の表領域の作成
+create tablespace recover_ts2 datafile '/u01/app/oracle/oradata/orcl12c/recover_ts2.dbf'  size 10M;
 
+その後、テーブル作成
+create table try.reco_table(id number , constraint pk_reco primary key(id)) tablespace recover_ts2;
+
+begin
+for i in 1 .. 500 loop
+insert into try.reco_table values (i);
+end loop;
+end;
+/
+
+RMAN> backup DATAFILE '/u01/app/oracle/oradata/orcl12c/recover_ts2.dbf';
+Starting backup at 02-JAN-18
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting full datafile backup set
+channel ORA_DISK_1: specifying datafile(s) in backup set
+input datafile file number=00018 name=/u01/app/oracle/oradata/orcl12c/recover_ts2.dbf
+channel ORA_DISK_1: starting piece 1 at 02-JAN-18
+channel ORA_DISK_1: finished piece 1 at 02-JAN-18
+piece handle=/run/media/oracle/F411-7650/05snmm8h_1_1 tag=TAG20180102T204401 comment=NONE
+channel ORA_DISK_1: backup set complete, elapsed time: 00:00:07
+Finished backup at 02-JAN-18
+Starting Control File and SPFILE Autobackup at 02-JAN-18
+
+リストアの実行
+restore datafile '/u01/app/oracle/oradata/orcl12c/recover_ts2.dbf';
+⇒ただし、このとき、リストア対象の表領域はオフラインにしている必要有。
+
+リカバリ(メディアリカバリ)の実行
+⇒ただリカバリしただけだと以下メディアリカバリできてなく、データの整合性が合わず、onlineにできない。
+ORA-01113: file 18 needs media recovery
+⇒recover datafile 18;
+
+
+
+●期限切れのバックアップがないかを確認し、あれば、削除するためのコマンド
+RMAN> crosscheck backupset;
+
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=15 device type=DISK
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/run/media/oracle/F411-7650/02snk5i2_1_1 RECID=1 STAMP=964302402
+crosschecked backup piece: found to be 'AVAILABLE'
+backup piece handle=/u01/app/oracle/fast_recovery_area/orcl12c/ORCL12C/autobackup/2018_01_01/o1_mf_s_964302517_f4nckc3q_.bkp RECID=2 STAMP=964302522
+Crosschecked 2 objects
+
+RMAN> DELETE EXPIRED BACKUP;
+using channel ORA_DISK_1
+specification does not match any backup in the repository
 
 
 
