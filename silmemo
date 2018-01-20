@@ -432,5 +432,80 @@ remote_recovery_file_dest  string
 /u01/app/oracle/oradata/orcl12c/control01.ctl             ⇒本体
 
 
+●ログバッファのサイズチューニング
+本来ならscope=spfileとした後にoracleのシャットダウンをすればok。
+SQL> alter system set log_buffer=6M scope=spfile;
+Error starting at line : 1 in command -
+alter system set log_buffer=6M scope=spfile
+Error report -
+ORA-65040: operation not allowed from within a pluggable database
+65040. 00000 -  "operation not allowed from within a pluggable database"
+*Cause:    An operation was attempted that can only be performed in the root
+           container.
+*Action:   Switch to the root container to perform the operation.
+
+●動的メモリの情報出力
+SQL> select component, current_size, user_specified_size from v$memory_dynamic_components;
+
+COMPONENT                                                        CURRENT_SIZE USER_SPECIFIED_SIZE
+---------------------------------------------------------------- ------------ -------------------
+shared pool                                                         356515840                   0
+large pool                                                            4194304                   0
+java pool                                                             4194304                   0
+streams pool                                                                0                   0
+SGA Target                                                          838860800           838860800
+DEFAULT buffer cache                                                419430400                   0
+KEEP buffer cache                                                           0                   0
+RECYCLE buffer cache                                                        0                   0
+DEFAULT 2K buffer cache                                                     0                   0
+DEFAULT 4K buffer cache                                                     0                   0
+DEFAULT 8K buffer cache                                                     0                   0
+DEFAULT 16K buffer cache                                                    0                   0
+DEFAULT 32K buffer cache                                                    0                   0
+Shared IO Pool                                                       37748736                   0
+Data Transfer Cache                                                         0                   0
+In-Memory Area                                                              0                   0
+In Memory RW Extension Area                                                 0                   0
+In Memory RO Extension Area                                                 0                   0
+PGA Target                                                          209715200           209715200
+ASM Buffer Cache                                                            0                   0
+
+20 rows selected.
+
+
+●公開されないオプティマイザ統計情報。dbms_stats.publish_pending_statsを使うまでは公開されない。
+SQL> exec dbms_stats.set_table_prefs('try','TEST','PUBLISH','FALSE')
+PL/SQL procedure successfully completed.
+Elapsed: 00:00:01.449
+
+●pending状態の統計情報の表示
+SQL> select num_rows,blocks from dba_tab_pending_stats ;
+
+●有効な統計情報の表
+select * from dba_tab_statistics where table_name='TBL2';
+
+●保留中統計を利用した検証。この後、同一セッションで実行計画が問題ないかを確認する。
+alter session set optimizer_use_pending_statistics=TRUE;
+
+●保留中統計の公開
+exec dbms_stats.publish_pending_stats('try','TEST')
+
+●オプティマイザ統計をロック
+exec dbms_stats.lock_table_stats('try','TEST')
+forceオプションありなら、統計情報を取得可能
+exec dbms_stats.gather_schema_stats( ownname=>'try', force => true)
+
+●過去の統計を参照
+select stats_update_time from dba_tab_stats_history;
+
+
+
+select name, value from v$sysstat;
+
+デフォルトでは取得しないOS稼働統計情報を取得。この情報はオプティマイザによる実行計画作成に影響を与えない。
+alter system set timed_os_statistics=3;
+
+
+
 
 
