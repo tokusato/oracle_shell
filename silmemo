@@ -506,6 +506,67 @@ select name, value from v$sysstat;
 alter system set timed_os_statistics=3;
 
 
+●データの移動
+DataPumpではダイレクトパスと外部表のいずれかがサポートされている。
+基本ダイレクトパスだがクラスタ表や参照整合制約、暗号化列がある場合は、ダイレクトパスを使えず、外部表パスを使う。
+ディレクトリオブジェクトはスキーマオブジェクトではない。常にsysスキーマとして作成
+expdp try/try directory=EXPORT_DIR schemas=try;
+ネットワークモードの場合は、ダンプファイルを生成せずエクスポートが可能
+・contentオプション
+定義のみをエクスポート：「 content=metadata_only 」
+データのみをエクスポート：「 content=data_only 」
+
+・ディスクの見積もりのみ
+estimate_only=y
+
+・SQLLoader
+cd /home/oracle/oracle_shell/DATA_MOVE/SQLLOADER
+sqlldr userid=try/try control=load1.ctl
+#####################################################
+Table SALES_LOAD:
+  7 Rows successfully loaded.
+Check the log file:
+  load1.log
+⇒ログファイルは、指定しないと、カレントディレクトリに自動的に出力される。
+
+
+データベースリンクを使うネットワークモードではDataPumpダンプファイルを生成する必要なし。
+ただし、ソースDB側の表領域を読み取り専用にし、ソースDBに対するデータベースリンクを作成する必要あり。
+データファイルは、インポート側に配置する必要有⇒直観と反する。でもこっちの方が速いのかなー。
+
+異なるプラットフォームなら、エンディアン形式をRMANのconvertで変更してからインポートエクスポートする。
+
+12Cの完全トランスポータブル表領域なら、ユーザ定義表領域(system,sysaux,undo,temp)を除くすべての表領域を移行できる。
+⇒対象のユーザ表領域は読み取り専用である必要有。
+
+
+●DBメンテナンス
+AWRの設定確認⇒スナップショット間隔時間，retention保存時間
+ select dbid, snap_interval, retention, topnsql from DBA_HIST_WR_CONTROL;
+
+
+AWRレポート取得方法⇒@?/rdbms/admin/awrrpt.sql
+⇒Snapshot Idなどの取得が必要
+
+DBMS_WORKLOAD_REPOSITORY：ワークロード・リポジトリを管理し、スナップショットやベースラインの管理などの操作を実行できる。
+⇒取得間隔を0にした場合は、自動でも手動でもスナップショットが取得されない。
+
+exec DBMS_WORKLOAD_REPOSITORY.modify_snapshot_settings(interval=>0);
+exec DBMS_WORKLOAD_REPOSITORY.create_snapshot;
+⇒AWR Operation failed:
+
+ちなみに、tryユーザなどの一般ユーザでPLSQLを実行するとPLS-00201エラーが出力され、実行されない。
+
+
+
+
+
+
+
+
+
+
+
 
 
 
