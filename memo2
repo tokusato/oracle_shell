@@ -68,5 +68,11 @@ startupは、OS認証でと書いてある。ああなるほど。つまりイ�
 
 sqlplus /nolog
 
+●エクステント管理(ローカル管理でなく、ディクショナリ管理を利用することの注意点)
+⇒system表領域がローカル管理の場合は、エクステントをディクショナリ管理する表領域を作成できない。
+12913. 00000 -  "Cannot create dictionary managed tablespace"
+*Cause:    Attemp to create dictionary managed tablespace in database
+           which has system tablespace as locally managed
+*Action:   Create a locally managed tablespace.
 
 
