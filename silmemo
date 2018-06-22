@@ -432,5 +432,141 @@ remote_recovery_file_dest  string
 /u01/app/oracle/oradata/orcl12c/control01.ctl             ⇒本体
 
 
+●ログバッファのサイズチューニング
+本来ならscope=spfileとした後にoracleのシャットダウンをすればok。
+SQL> alter system set log_buffer=6M scope=spfile;
+Error starting at line : 1 in command -
+alter system set log_buffer=6M scope=spfile
+Error report -
+ORA-65040: operation not allowed from within a pluggable database
+65040. 00000 -  "operation not allowed from within a pluggable database"
+*Cause:    An operation was attempted that can only be performed in the root
+           container.
+*Action:   Switch to the root container to perform the operation.
+
+●動的メモリの情報出力
+SQL> select component, current_size, user_specified_size from v$memory_dynamic_components;
+
+COMPONENT                                                        CURRENT_SIZE USER_SPECIFIED_SIZE
+---------------------------------------------------------------- ------------ -------------------
+shared pool                                                         356515840                   0
+large pool                                                            4194304                   0
+java pool                                                             4194304                   0
+streams pool                                                                0                   0
+SGA Target                                                          838860800           838860800
+DEFAULT buffer cache                                                419430400                   0
+KEEP buffer cache                                                           0                   0
+RECYCLE buffer cache                                                        0                   0
+DEFAULT 2K buffer cache                                                     0                   0
+DEFAULT 4K buffer cache                                                     0                   0
+DEFAULT 8K buffer cache                                                     0                   0
+DEFAULT 16K buffer cache                                                    0                   0
+DEFAULT 32K buffer cache                                                    0                   0
+Shared IO Pool                                                       37748736                   0
+Data Transfer Cache                                                         0                   0
+In-Memory Area                                                              0                   0
+In Memory RW Extension Area                                                 0                   0
+In Memory RO Extension Area                                                 0                   0
+PGA Target                                                          209715200           209715200
+ASM Buffer Cache                                                            0                   0
+
+20 rows selected.
+
+
+●公開されないオプティマイザ統計情報。dbms_stats.publish_pending_statsを使うまでは公開されない。
+SQL> exec dbms_stats.set_table_prefs('try','TEST','PUBLISH','FALSE')
+PL/SQL procedure successfully completed.
+Elapsed: 00:00:01.449
+
+●pending状態の統計情報の表示
+SQL> select num_rows,blocks from dba_tab_pending_stats ;
+
+●有効な統計情報の表
+select * from dba_tab_statistics where table_name='TBL2';
+
+●保留中統計を利用した検証。この後、同一セッションで実行計画が問題ないかを確認する。
+alter session set optimizer_use_pending_statistics=TRUE;
+
+●保留中統計の公開
+exec dbms_stats.publish_pending_stats('try','TEST')
+
+●オプティマイザ統計をロック
+exec dbms_stats.lock_table_stats('try','TEST')
+forceオプションありなら、統計情報を取得可能
+exec dbms_stats.gather_schema_stats( ownname=>'try', force => true)
+
+●過去の統計を参照
+select stats_update_time from dba_tab_stats_history;
+
+
+
+select name, value from v$sysstat;
+
+デフォルトでは取得しないOS稼働統計情報を取得。この情報はオプティマイザによる実行計画作成に影響を与えない。
+alter system set timed_os_statistics=3;
+
+
+●データの移動
+DataPumpではダイレクトパスと外部表のいずれかがサポートされている。
+基本ダイレクトパスだがクラスタ表や参照整合制約、暗号化列がある場合は、ダイレクトパスを使えず、外部表パスを使う。
+ディレクトリオブジェクトはスキーマオブジェクトではない。常にsysスキーマとして作成
+expdp try/try directory=EXPORT_DIR schemas=try;
+ネットワークモードの場合は、ダンプファイルを生成せずエクスポートが可能
+・contentオプション
+定義のみをエクスポート：「 content=metadata_only 」
+データのみをエクスポート：「 content=data_only 」
+
+・ディスクの見積もりのみ
+estimate_only=y
+
+・SQLLoader
+cd /home/oracle/oracle_shell/DATA_MOVE/SQLLOADER
+sqlldr userid=try/try control=load1.ctl
+#####################################################
+Table SALES_LOAD:
+  7 Rows successfully loaded.
+Check the log file:
+  load1.log
+⇒ログファイルは、指定しないと、カレントディレクトリに自動的に出力される。
+
+
+データベースリンクを使うネットワークモードではDataPumpダンプファイルを生成する必要なし。
+ただし、ソースDB側の表領域を読み取り専用にし、ソースDBに対するデータベースリンクを作成する必要あり。
+データファイルは、インポート側に配置する必要有⇒直観と反する。でもこっちの方が速いのかなー。
+
+異なるプラットフォームなら、エンディアン形式をRMANのconvertで変更してからインポートエクスポートする。
+
+12Cの完全トランスポータブル表領域なら、ユーザ定義表領域(system,sysaux,undo,temp)を除くすべての表領域を移行できる。
+⇒対象のユーザ表領域は読み取り専用である必要有。
+
+
+●DBメンテナンス
+AWRの設定確認⇒スナップショット間隔時間，retention保存時間
+ select dbid, snap_interval, retention, topnsql from DBA_HIST_WR_CONTROL;
+
+
+AWRレポート取得方法⇒@?/rdbms/admin/awrrpt.sql
+⇒Snapshot Idなどの取得が必要
+
+DBMS_WORKLOAD_REPOSITORY：ワークロード・リポジトリを管理し、スナップショットやベースラインの管理などの操作を実行できる。
+⇒取得間隔を0にした場合は、自動でも手動でもスナップショットが取得されない。
+
+exec DBMS_WORKLOAD_REPOSITORY.modify_snapshot_settings(interval=>0);
+exec DBMS_WORKLOAD_REPOSITORY.create_snapshot;
+⇒AWR Operation failed:
+
+ちなみに、tryユーザなどの一般ユーザでPLSQLを実行するとPLS-00201エラーが出力され、実行されない。
+
+
+
+
+
+
+
+
+
+
+
+
 
 
