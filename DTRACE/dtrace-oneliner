@@ -1,0 +1,149 @@
+
+
+#############################################
+※ファイル出力したいなら、>>出力先ファイル名
+#############################################
+
+★syscallプロバイダ
+
+syscallプロバイダに含まれるentryプローブのリストを表示する。
+dtrace -ln 'syscall:::entry'
+
+プロセス名ごとにシステムコールの数を数える。
+dtrace -n 'syscall:::entry{@[probefunc] = count();}' | head -n 10
+
+プロセスID9211を呼び出しているシステムコールの数を名前ごとに数える。
+dtrace -n 'syscall:::entry/pid == 9211/{@[probefunc] = count();}' 
+
+  semtimedop                                                        1
+  getrusage                                                         3
+
+●特定のプロバイダのプローブを調べる
+[root@localhost ~]# dtrace -l -P dtrace
+   ID   PROVIDER            MODULE                          FUNCTION NAME
+    1     dtrace                                                     BEGIN
+    2     dtrace                                                     END
+    3     dtrace                                                     ERROR
+
+●
+dtrace -n 'dtrace:::BEGIN{trace ("hello,world");}'
+
+●終わった後に制御が戻ってくる。
+dtrace -n 'dtrace:::BEGIN{trace ("hello,world");exit(0)}'
+
+
+●●●ファイルのopenをトレーシングして、プロセス名とパス名を表示する。
+dtrace -n 'syscall::open:entry{ printf("%s%s",execname,copyinstr(arg0))}'
+
+●●●ファイルシステタイプごとにwrite()システムコールの数を数える。→Ctrl + C を押すと結果が出力される。
+dtrace -n 'syscall::write:entry{@[fds[arg0].fi_fs] = count();}'
+
+●●●ファイル記述子のパス名ごとにwriteのシステムコールの数を数える。
+dtrace -n 'syscall::write:entry{@[fds[arg0].fi_pathname] = count();}'
+
+
+●●●read()が返したバイト数の合計をプロセス名ごとにべき乗分布図にまとめる。
+dtrace -n 'syscall::read:return{@[execname,"rval(bytes)"]=quantize(arg1);}'
+
+●●●oracleプロセスのread()令天使をべき乗分布にまとめる。
+dtrace -n 'syscall::read:entry/execname == "oracle"/{self->ts = timestamp;} syscall::read:return/self->ts/ {@["ns"] = quantize(timestamp - self->ts); self->ts = 0;}'
+
+
+●プロセス名ごとにソケットのconnect()呼び出しの数を数える。
+ dtrace -n 'syscall::connect:entry {@[execname] = count();}'
+
+
+★procプロバイダ
+
+●プロセス名と引数をつけて新プロセスをトレーシングする。→lsとか打つとそのプロセスが表示される。
+[root@localhost ~]# dtrace -n 'proc:::exec-success{trace(curpsinfo->pr_psargs);}'
+dtrace: description 'proc:::exec-success' matched 1 probe
+^C
+CPU     ID                    FUNCTION:NAME
+  0   1191  do_execveat_common:exec-success   ora_m000_orcl12c
+
+●プロセスレベルイベントを数える。
+[root@localhost ~]# dtrace -n 'proc:::{@[probename] = count();}'
+dtrace: description 'proc:::' matched 14 probes
+^C
+
+  exec                                                              3
+  exec-success                                                      3
+  signal-discard                                                    3
+  signal-handle                                                     4
+  exit                                                              6
+  signal-send                                                       7
+  create                                                           11
+  lwp-create                                                       11
+  lwp-exit                                                         11
+  lwp-start                                                        11
+  start                                                            11
+
+
+★profileプロバイダ
+●カーネルスタックを997Hzでサンプリングする。
+dtrace -n 'profile-997 /arg0/ {@[stack()] = count();}'
+
+●カーネルスタックをトップ3のみ表示する。
+dtrace -n 'profile-997 /arg0/ {@[stack()] = count();} END{trunc(@,3);}'
+
+
+
+
+★schedプロバイダ
+●"sshd"がCPUで実行されていた時間をべき乗分布図にまとめる。
+dtrace -n 'sched:::on-cpu /execname=="sshd"/{ self->ts = timestamp; } sched:::off-cpu /self->ts/ { @["ns"] = quantize(timestamp - self->ts); self->ts = 0; }'
+
+●どのCPUでsshdが実行されているかを表示
+dtrace -n 'sched:::on-cpu /execname=="sshd"/{ self->ts = timestamp; } sched:::off-cpu /self->ts/ { @["ns"] = quantize(timestamp - self->ts); self->ts = 0; }'
+        0
+           value  ------------- Distribution ------------- count
+           65536 |                                         0
+          131072 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2
+          262144 |                                         0
+
+        1
+           value  ------------- Distribution ------------- count
+            8192 |                                         0
+           16384 |@                                        2
+           32768 |                                         1
+           65536 |@@@                                      9
+          131072 |@@@@@@@@@@@@@                            37
+          262144 |@@@@@@@@@@@@@                            37
+          524288 |@@@@@                                    15
+         1048576 |@@@@                                     10
+         2097152 |@                                        2
+         4194304 |                                         0
+
+
+★Linuxのスケジューリング
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

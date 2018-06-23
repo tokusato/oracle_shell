@@ -1,0 +1,7 @@
+
+
+  close                                                             3
+  open                                                              3
+  read                                                              3
+  semtimedop                                                        3
+  getrusage                                                         6

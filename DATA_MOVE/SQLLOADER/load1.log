@@ -1,0 +1,55 @@
+
+SQL*Loader: Release 12.2.0.1.0 - Production on Sat Feb 10 23:37:09 2018
+
+Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   load1.ctl
+Data File:      load1.ctl
+  Bad File:     load1.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Bind array:     64 rows, maximum of 256000 bytes
+Continuation:    none specified
+Path used:      Conventional
+
+Table SALES_LOAD, loaded from every logical record.
+Insert option in effect for this table: APPEND
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+SALES_DATE                          FIRST     *   ,       DATE DD-MON-YY       
+ORDER_ID                             NEXT     *   ,       CHARACTER            
+PRODUCT_ID                           NEXT     *   ,       CHARACTER            
+PRODUCT_NAME                         NEXT     *   ,       CHARACTER            
+PRODUCT_CATEGORY                     NEXT     *   ,       CHARACTER            
+QUANTITY                             NEXT     *   ,       CHARACTER            
+SALES_AMOUNT                         NEXT     *   ,       CHARACTER            
+
+Record 8: Rejected - Error on table SALES_LOAD, column SALES_DATE.
+Column not found before end of logical record (use TRAILING NULLCOLS)
+
+Table SALES_LOAD:
+  7 Rows successfully loaded.
+  1 Row not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+
+Space allocated for bind array:                 115584 bytes(64 rows)
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:             8
+Total logical records rejected:         1
+Total logical records discarded:        0
+
+Run began on Sat Feb 10 23:37:09 2018
+Run ended on Sat Feb 10 23:37:09 2018
+
+Elapsed time was:     00:00:00.15
+CPU time was:         00:00:00.03
