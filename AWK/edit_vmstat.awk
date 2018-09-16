@@ -11,14 +11,25 @@
 BEGIN {  #FS="\s"  # 空白を区切り文字にする
          #print"r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st"
          headersize=2
+         bimin=1000000000; bomin=1000000000
+         bimax=0; bomax=0
        }
        { 
          if (NR > headersize){
            print $10,$11
-           bi=bi+$10
-           bo=bo+$11
+
+           # 初期値の設定は不要らしい
+           bitotal+=$10
+           if(bimin>$10) bimin=$10
+           if(bimax<$10) bimax=$10
+
+           bototal+=$11
+           if(bomin>$11) bomin=$11
+           if(bomax<$11) bomax=$11
          }
        }
  END   { 
-	print "ave =>" , bi/(NR-headersize), bo/(NR-headersize)
+	print "ave =>" , bitotal/(NR-headersize), bototal/(NR-headersize)
+	print "max =>" , bimax,bomax
+	print "min =>" , bimin,bomin
 	}
