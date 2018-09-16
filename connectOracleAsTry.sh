@@ -34,7 +34,7 @@ esac
 
 
 #${LDLIBPATH}/sqlplus TRY/try@ORCL 
-${LDLIBPATH}/sql TRY/try@ORCL 
+${LDLIBPATH}/sqlplus TRY/try@ORCL 
 #${LDLIBPATH}/sqlplus -s sys/oracle@orcl12c as sysdba
 #LDLIB/sqlplus sys/oracle as sysdba
 

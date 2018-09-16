@@ -1,0 +1,63 @@
+
+SQL*Loader: Release 12.2.0.1.0 - Production on Sat Feb 10 23:41:17 2018
+
+Copyright (c) 1982, 2017, Oracle and/or its affiliates.  All rights reserved.
+
+Control File:   load_direct_path_loads.ctl
+Data File:      load_direct_path_loads.ctl
+  Bad File:     load_direct_path_loads.bad
+  Discard File:  none specified
+ 
+ (Allow all discards)
+
+Number to load: ALL
+Number to skip: 0
+Errors allowed: 50
+Continuation:    none specified
+Path used:      Direct
+
+Table SALES_LOAD, loaded from every logical record.
+Insert option in effect for this table: APPEND
+
+   Column Name                  Position   Len  Term Encl Datatype
+------------------------------ ---------- ----- ---- ---- ---------------------
+SALES_DATE                          FIRST     *   ,       DATE DD-MON-YY       
+ORDER_ID                             NEXT     *   ,       CHARACTER            
+PRODUCT_ID                           NEXT     *   ,       CHARACTER            
+PRODUCT_NAME                         NEXT     *   ,       CHARACTER            
+PRODUCT_CATEGORY                     NEXT     *   ,       CHARACTER            
+QUANTITY                             NEXT     *   ,       CHARACTER            
+SALES_AMOUNT                         NEXT     *   ,       CHARACTER            
+
+Record 8: Rejected - Error on table SALES_LOAD, column SALES_DATE.
+Column not found before end of logical record (use TRAILING NULLCOLS)
+
+Table SALES_LOAD:
+  7 Rows successfully loaded.
+  1 Row not loaded due to data errors.
+  0 Rows not loaded because all WHEN clauses were failed.
+  0 Rows not loaded because all fields were null.
+
+  Date cache:
+   Max Size:      1000
+   Entries :         4
+   Hits    :         3
+   Misses  :         0
+
+Bind array size not used in direct path.
+Column array  rows :    5000
+Stream buffer bytes:  256000
+Read   buffer bytes: 1048576
+
+Total logical records skipped:          0
+Total logical records read:             8
+Total logical records rejected:         1
+Total logical records discarded:        0
+Total stream buffers loaded by SQL*Loader main thread:        1
+Total stream buffers loaded by SQL*Loader load thread:        0
+
+Run began on Sat Feb 10 23:41:17 2018
+Run ended on Sat Feb 10 23:41:17 2018
+
+Elapsed time was:     00:00:00.13
+CPU time was:         00:00:00.04
