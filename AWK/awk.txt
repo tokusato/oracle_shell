@@ -1,0 +1,14 @@
+
+
+
+●後ろから2フィールド目を表示する。
+echo 'this is a pen ' | awk '{print $(NF-1)}'
+
+●指定したフィールドのみ削除
+echo "this is a pen " | awk '{$3 = ""; print}'
+
+●書式を指定してawkコマンドを実行する。
+echo "this is a pen " | awk '{printf("%s %s\\n", $1, $3)}'
+
+
+
