@@ -4,8 +4,16 @@
 ## pass : oracle 
 ##################################
 
-#${LDLIBPATH}/sqlplus -s sys/oracle as sysdba
-sql  sys/oracle as sysdba
-#${LDLIBPATH}/sqlplus -s sys/oracle@orcl12c as sysdba
-#LDLIB/sqlplus sys/oracle as sysdba
+USER=sys
+PASSWORD=oracle
+DEFAULT_SERVICE=`lsnrctl status  | grep 'Default Service' | awk '{print $3}'`
+
+if [ ${DEFAULT_SERVICE} ="" ];then
+  echo "cannot get service name which listener recognize. please execute lsnrctl status"
+  exit 1
+fi
+
+echo "now connecting to DEFAULT SERVICE ${DEFAULT_SERVICE} by user sys"
+
+sqlplus ${USER}/${PASSWORD}@${DEFAULT_SERVICE} as sysdba
 
